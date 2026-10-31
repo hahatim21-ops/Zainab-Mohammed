@@ -4,18 +4,36 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 // Smooth, natural page scrolling (Lenis) wired into ScrollTrigger, plus the
 // scroll lock used while the opening plays.
+//
+// The lock never touches `overflow`: Android Chrome does not re-enable touch
+// scrolling when overflow on <html>/<body> is switched back after a lock.
+// Instead, scroll gestures are simply swallowed while locked.
+
+const SCROLL_KEYS = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ', 'Spacebar']);
 
 export function createScroll({ reduced }) {
   const hint = document.getElementById('scroll-hint');
   let hintEnabled = false;
   let idleTimer = 0;
+  let locked = false;
+
+  // Registered before Lenis so they run first and can stop it seeing input.
+  const block = (e) => {
+    if (!locked) return;
+    if (e.type === 'keydown' && !SCROLL_KEYS.has(e.key)) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  };
+  const opts = { passive: false, capture: true };
+  window.addEventListener('wheel', block, opts);
+  window.addEventListener('touchmove', block, opts);
+  window.addEventListener('keydown', block, opts);
 
   const lenis = new Lenis({
     duration: reduced ? 0.6 : 1.2,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
-    syncTouch: false,
-    touchMultiplier: 1.1,
+    syncTouch: false, // touch scrolling stays fully native on phones
     autoRaf: false,
   });
   lenis.on('scroll', ScrollTrigger.update);
@@ -29,7 +47,7 @@ export function createScroll({ reduced }) {
     clearTimeout(idleTimer);
     if (!hintEnabled) return;
     idleTimer = setTimeout(() => {
-      if (hintEnabled && !atEnd() && !lenis.isStopped) showHint(true);
+      if (hintEnabled && !atEnd() && !locked) showHint(true);
     }, 3200);
   };
   lenis.on('scroll', () => {
@@ -40,13 +58,11 @@ export function createScroll({ reduced }) {
   return {
     lenis,
     lock() {
-      lenis.stop();
-      document.body.classList.add('is-locked');
+      locked = true;
       showHint(false);
     },
     unlock() {
-      document.body.classList.remove('is-locked');
-      lenis.start();
+      locked = false;
       lenis.resize();
       ScrollTrigger.refresh();
     },

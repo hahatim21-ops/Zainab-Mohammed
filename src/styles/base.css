@@ -40,7 +40,7 @@ body {
   background: var(--ivory);
   color: var(--olive);
   font-family: var(--serif);
-  overflow-x: hidden;
+  overflow-x: clip;
   overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
@@ -50,7 +50,6 @@ body {
   -webkit-user-select: none;
   user-select: none;
 }
-body.is-locked { overflow: hidden; height: 100%; }
 
 img { display: block; max-width: 100%; -webkit-user-drag: none; pointer-events: none; }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
@@ -85,7 +84,11 @@ a { color: inherit; }
    The paintings sit edge to edge in normal flow, like one long scroll;
    each one's top edge melts softly over the one before it. */
 
-:root { --col: min(100vw, 540px); }
+:root {
+  /* One page = one screen: the column is as wide as a 9:16 painting that
+     fits the visible screen height (never wider than the screen). */
+  --col: min(100vw, calc(var(--view-h) * 9 / 16));
+}
 #backdrop {
   position: fixed;
   inset: -6%;
