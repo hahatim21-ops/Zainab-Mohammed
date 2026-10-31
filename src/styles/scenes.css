@@ -400,6 +400,8 @@
 }
 .map-btn span { position: relative; }
 
+#s-dinner .map-btn { top: 86%; }
+
 /* ─── Scene 7 · Couple ─────────────────────────────────────────── */
 
 .replay {

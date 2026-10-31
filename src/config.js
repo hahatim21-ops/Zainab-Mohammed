@@ -11,8 +11,8 @@ export const COUPLE = {
 // Nikah start, in IST. The countdown runs to this moment.
 export const EVENT_DATETIME = '2026-11-14T16:00:00+05:30';
 
-// "View location" button on the Nikah scene. Swap for an exact pin when you have it.
-export const MAP_URL = 'https://www.google.com/maps/search/?api=1&query=Jama+Masjid+Nallasopara+West';
+// "View location" button on the Dinner page (the residence).
+export const MAP_URL = 'https://maps.app.goo.gl/mvNkSHeDNPXRAaBk7?g_st=iw';
 
 // Background music (served from /public).
 export const MUSIC_SRC = '/audio/music.mp3';

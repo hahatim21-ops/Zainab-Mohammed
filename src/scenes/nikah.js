@@ -1,7 +1,6 @@
-// Scene 5: Nikah details + "View location" button.
+// Scene 5: Nikah. The details are printed in the artwork; motion comes from
+// the gold sheen across "Nikah", the twinkles over the mosque and the scroll.
 
-export function initNikah(scene, { mapUrl }) {
-  const btn = scene.querySelector('.map-btn');
-  btn.href = mapUrl;
-  return { button: btn };
+export function initNikah(scene) {
+  return { scene };
 }

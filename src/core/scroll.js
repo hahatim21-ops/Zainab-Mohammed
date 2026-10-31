@@ -2,17 +2,11 @@ import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-// Smooth scrolling (Lenis) wired into ScrollTrigger. The pages are fixed
-// layers; #track only gives the document its height, and `allow(screens)`
-// sets how far the guest may scroll (0 while the opening plays and until
-// the date is revealed).
+// Smooth, natural page scrolling (Lenis) wired into ScrollTrigger, plus the
+// scroll lock used while the opening plays.
 
 export function createScroll({ reduced }) {
-  const track = document.getElementById('track');
   const hint = document.getElementById('scroll-hint');
-  let unit = window.innerHeight; // a stable "screen" that ignores URL-bar resizes
-  let lastW = window.innerWidth;
-  let allowed = 0;
   let hintEnabled = false;
   let idleTimer = 0;
 
@@ -20,9 +14,8 @@ export function createScroll({ reduced }) {
     duration: reduced ? 0.6 : 1.2,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smoothWheel: true,
-    syncTouch: true, // touch follows the finger, then glides
-    syncTouchLerp: 0.085,
-    touchInertiaExponent: 1.6,
+    syncTouch: false,
+    touchMultiplier: 1.1,
     autoRaf: false,
   });
   lenis.on('scroll', ScrollTrigger.update);
@@ -30,9 +23,6 @@ export function createScroll({ reduced }) {
   gsap.ticker.lagSmoothing(0);
   ScrollTrigger.config({ ignoreMobileResize: true });
 
-  const applyHeight = () => {
-    track.style.height = `${Math.round(window.innerHeight + allowed * unit)}px`;
-  };
   const atEnd = () => window.scrollY >= document.documentElement.scrollHeight - window.innerHeight - 8;
   const showHint = (on) => hint.classList.toggle('is-visible', on);
   const scheduleHint = () => {
@@ -40,27 +30,15 @@ export function createScroll({ reduced }) {
     if (!hintEnabled) return;
     idleTimer = setTimeout(() => {
       if (hintEnabled && !atEnd() && !lenis.isStopped) showHint(true);
-    }, 3000);
+    }, 3200);
   };
   lenis.on('scroll', () => {
     showHint(false);
     scheduleHint();
   });
 
-  window.addEventListener('resize', () => {
-    if (window.innerWidth !== lastW || Math.abs(window.innerHeight - unit) > 160) {
-      lastW = window.innerWidth;
-      unit = window.innerHeight;
-      applyHeight();
-      ScrollTrigger.refresh();
-    }
-  });
-
   return {
     lenis,
-    get unit() {
-      return unit;
-    },
     lock() {
       lenis.stop();
       document.body.classList.add('is-locked');
@@ -69,13 +47,10 @@ export function createScroll({ reduced }) {
     unlock() {
       document.body.classList.remove('is-locked');
       lenis.start();
-    },
-    allow(screens) {
-      allowed = screens;
-      applyHeight();
       lenis.resize();
       ScrollTrigger.refresh();
     },
+    /** Show the hint now and again whenever the guest pauses mid-way. */
     hint(on = true) {
       hintEnabled = on;
       showHint(on);

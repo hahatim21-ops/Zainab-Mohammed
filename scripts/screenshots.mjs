@@ -25,22 +25,24 @@ for (const size of sizes) {
   await wait(6);
   await shot('seal');
   await page.click('.seal-hit');
-  for (const t of [0.5, 0.5, 0.5, 0.6]) { await wait(t); await shot('opening'); }
-  await wait(1.0);
-  for (const t of [0.7, 0.7, 0.7, 0.8]) { await wait(t); await shot('bow'); }
-  await wait(1.4);
-  await shot('bow-hold');
-  for (const t of [0.4, 0.4, 0.4, 0.4, 0.4, 0.4]) { await wait(t); await shot('untie'); }
-  await wait(0.8);
+  // Opening, bow forming, bow opening by itself
+  for (let i = 0; i < 16; i++) { await wait(0.5); await shot(`intro-${(i + 1) * 0.5}s`); }
+  await wait(1);
+  await shot('names');
+  // Scroll the continuous page; tap the date when it is on screen
+  const H = await page.evaluate(() => innerHeight);
+  const dateTop = await page.evaluate(() => document.querySelector('#s-date').offsetTop);
+  await page.evaluate((y) => window.scrollTo(0, y), dateTop);
+  await wait(1.6);
   await shot('date-veiled');
   await page.mouse.click(w / 2, h / 2);
-  for (const t of [0.5, 0.5, 0.6, 1.4]) { await wait(t); await shot('date-reveal'); }
-  await wait(0.5);
-  const H = await page.evaluate(() => innerHeight);
-  for (const u of [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4]) {
-    await page.evaluate((y) => window.scrollTo(0, y), u * H);
-    await wait(1.6);
-    await shot(`scroll-${u}`);
+  await wait(2.2);
+  await shot('date-revealed');
+  const total = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight);
+  for (let y = dateTop + H * 0.5, i = 0; y <= total + H * 0.5; y += H * 0.5, i++) {
+    await page.evaluate((y) => window.scrollTo(0, y), Math.min(y, total));
+    await wait(1.2);
+    await shot(`scroll-${String(i).padStart(2, '0')}`);
   }
   const hscroll = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
   console.log(size, 'hscroll:', hscroll, 'errors:', errors);

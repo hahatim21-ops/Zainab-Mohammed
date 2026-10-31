@@ -6,7 +6,7 @@ import { KNOT, PART_ORDER } from './bowGeometry.js';
 // Scene 2: the lace bow is the real one from the photo, cut into its pieces
 // (tails, loops, knot) over a rebuilt background. It starts loose — loops
 // low and wide, tails slack — pulls up into place with a soft tug, holds,
-// then unties: the loops slip apart, the tails fall away and the curtains
+// then unties by itself: the loops slip apart, the tails fall away and the curtains
 // part onto the date page.
 
 // Lantern and candle glows (x/y in %, size in cqw).
@@ -62,35 +62,35 @@ export function initBow(scene, { reduced }) {
 
   // Waiting state, seen through the opening flower: soft, close, bow loose.
   gsap.set(intro, { scale: 1.08 });
-  gsap.set(kb, { filter: 'blur(8px) brightness(1.06)' });
+  gsap.set(kb, { filter: 'blur(3px) brightness(1.04)' });
   if (!reduced) for (const [name, pose] of Object.entries(LOOSE)) gsap.set(parts[name], pose);
 
   /** The loose bow pulls tight and settles. */
   function tie() {
     const tl = gsap.timeline();
-    tl.to(intro, { scale: 1, duration: 2.2, ease: 'power2.inOut' }, 0)
-      .to(kb, { filter: 'blur(0px) brightness(1)', duration: 1.6, ease: 'power2.inOut' }, 0);
+    tl.to(intro, { scale: 1, duration: 1.4, ease: 'power2.inOut' }, 0)
+      .to(kb, { filter: 'blur(0px) brightness(1)', duration: 0.5, ease: 'power1.out' }, 0);
     if (reduced) return tl.add(() => glows.start(0.8), 0.8).then(() => gsap.set(kb, { clearProps: 'filter' }));
 
     tl
       // Slack first: everything sags a touch, as if the ribbon is being gathered
-      .to([parts.loopL, parts.loopR], { yPercent: '+=0.8', duration: 0.7, ease: 'sine.inOut' }, 0.2)
-      .to(parts.knot, { yPercent: '+=0.6', duration: 0.7, ease: 'sine.inOut' }, 0.2)
+      .to([parts.loopL, parts.loopR], { yPercent: '+=0.8', duration: 0.35, ease: 'sine.inOut' }, 0.1)
+      .to(parts.knot, { yPercent: '+=0.6', duration: 0.35, ease: 'sine.inOut' }, 0.1)
       // The tug: tails pull, loops lift into shape, the knot cinches
-      .to([parts.tailL, parts.tailR], { rotation: 0, yPercent: 0, scaleY: 1, duration: 0.9, ease: 'power3.out' }, 0.95)
-      .to([parts.loopL, parts.loopR], { rotation: 0, yPercent: 0, scaleX: 1, scaleY: 1, duration: 1.1, ease: 'back.out(1.7)' }, 1.0)
-      .to(parts.knot, { yPercent: 0, scaleX: 0.9, scaleY: 1.06, duration: 0.35, ease: 'power3.out' }, 1.0)
-      .to(parts.knot, { scaleX: 1, scaleY: 1, scale: 1, duration: 0.8, ease: 'elastic.out(1, 0.45)' }, 1.35)
+      .to([parts.tailL, parts.tailR], { rotation: 0, yPercent: 0, scaleY: 1, duration: 0.8, ease: 'power3.out' }, 0.45)
+      .to([parts.loopL, parts.loopR], { rotation: 0, yPercent: 0, scaleX: 1, scaleY: 1, duration: 1.0, ease: 'back.out(1.7)' }, 0.5)
+      .to(parts.knot, { yPercent: 0, scaleX: 0.9, scaleY: 1.06, duration: 0.3, ease: 'power3.out' }, 0.5)
+      .to(parts.knot, { scaleX: 1, scaleY: 1, scale: 1, duration: 0.8, ease: 'elastic.out(1, 0.45)' }, 0.8)
       .add(() => {
         sparkleBurst(fx, KNOT.x, KNOT.y, 16);
         try {
           navigator.vibrate?.(15);
         } catch {}
-      }, 1.1)
-      .add(() => glows.start(1.4), 1.3)
+      }, 0.6)
+      .add(() => glows.start(1.2), 0.7)
       // The tails sway once as the bow settles
-      .to(parts.tailL, { rotation: -1.2, duration: 0.6, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 1.9)
-      .to(parts.tailR, { rotation: 1.2, duration: 0.6, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 1.95);
+      .to(parts.tailL, { rotation: -1.2, duration: 0.45, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 1.2)
+      .to(parts.tailR, { rotation: 1.2, duration: 0.45, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 1.25);
 
     return tl.then(() => gsap.set(kb, { clearProps: 'filter' }));
   }

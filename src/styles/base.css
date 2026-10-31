@@ -81,29 +81,54 @@ a { color: inherit; }
 #s-bow { z-index: 2; }
 #s-bow.is-waiting { visibility: hidden; }
 
-/* ─── Pages: fixed, stacked layers that the scroll slides and dissolves ── */
+/* ─── Pages: one continuous scrolling column ──────────────────────
+   The paintings sit edge to edge in normal flow, like one long scroll;
+   each one's top edge melts softly over the one before it. */
 
-#pages {
+:root { --col: min(100vw, 540px); }
+#backdrop {
   position: fixed;
-  inset: 0;
-  z-index: 1;
-  overflow: hidden;
+  inset: -6%;
+  z-index: 0;
+  background: url(/images/03-date-bg.webp) center / cover no-repeat;
+  filter: blur(18px);
 }
-.page {
-  --fe: 0%;
+#backdrop::after {
+  content: '';
   position: absolute;
   inset: 0;
+  background: rgba(248, 241, 228, 0.25);
+}
+#pages {
+  position: relative;
+  z-index: 1;
+  width: var(--col);
+  margin: 0 auto;
+}
+@media (min-width: 600px) {
+  /* soft sides where the column meets the backdrop */
+  #pages {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+  }
+}
+.page {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 16;
   overflow: hidden;
-  contain: strict;
-  will-change: transform;
 }
-/* The arriving page's leading edge is a long soft feather, so one painting
-   melts into the next instead of meeting it at a line. */
 .page + .page {
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 var(--fe));
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 var(--fe));
+  margin-top: calc(var(--col) * 16 / 9 * -0.08);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 8%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 8%);
 }
-#track { width: 1px; height: 100vh; pointer-events: none; }
+.page .stage {
+  left: 0;
+  top: 0;
+  width: 100%;
+  transform: none;
+}
 
 /* Letterbox fill: blurred, brightened copy of the artwork */
 .scene-bg {

@@ -131,7 +131,7 @@ export function initSeal(scene, { reduced, onTap, reveal }) {
         .to(hole, { s: maxSize, duration: 2.1, ease: 'power2.in', onUpdate: setHole }, 0.57)
         // …while the outer petals drift outward and soften
         .to(intro, { scale: 1.22, duration: 2.4, ease: 'power1.in' }, 0.35)
-        .fromTo(plate, { filter: 'blur(0px) brightness(1)' }, { filter: 'blur(5px) brightness(1.06)', duration: 2.2, ease: 'power1.in' }, 0.5)
+        .fromTo(plate, { filter: 'blur(0px) brightness(1)' }, { filter: 'blur(2px) brightness(1.04)', duration: 2.0, ease: 'power1.in' }, 0.5)
         .to(scene.querySelectorAll('.scene-bg, .bands'), { opacity: 0, duration: 1.4, ease: 'power1.in' }, 1.0);
 
       await tl;

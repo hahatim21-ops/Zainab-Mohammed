@@ -2,9 +2,8 @@
 
 A mobile-first, single-page invitation that plays like a short film:
 wax seal lifts → the flower opens softly onto the bow → the real lace bow pulls
-tight, holds, then unties as the curtains part → tap to reveal the date (golden
-wipe + confetti) → then one continuous, scrolling painting: countdown → Nikah →
-Dinner → the couple.
+tight, holds a moment, then opens by itself onto the names card → then one continuous scrolling page: names card → date (tap to reveal, golden wipe
++ confetti) → countdown → Nikah → Dinner (with the location button) → the couple.
 
 Built with Vite (vanilla JS), GSAP + ScrollTrigger, Lenis and canvas-confetti.
 
@@ -42,7 +41,7 @@ music button stays hidden.
 | --- | --- |
 | `COUPLE` | Names / families |
 | `EVENT_DATETIME` | Countdown target (`2026-11-14T16:00:00+05:30`) |
-| `MAP_URL` | "View location" button on the Nikah scene |
+| `MAP_URL` | "View location" button on the Dinner page (the residence) |
 | `MUSIC_SRC`, `MUSIC_VOLUME` | Track path and final volume (fades 0 → 0.6 over 3 s) |
 | `SITE_URL`, `OG_IMAGE_URL` | **Fill in after deploying** — absolute URLs for the WhatsApp preview |
 | `META` | Page title, description, theme colour |
@@ -78,10 +77,10 @@ The seal lifts away and the bow scene shows through a growing, feathered rosette
 pieces (tails, loops, knot) using the outlines in `src/scenes/bowGeometry.js` and
 rebuilds the background behind it (`02-bow-clean`), so `bow.js` can move the pieces.
 
-**Scroll.** After the date is tapped, every scroll moves the paintings: each new
-page slides up with your finger, its top edge a long soft feather that melts over
-the page before it, while that page drifts up more slowly and fades. One screen of
-scroll = one page change. Timings live in `src/scenes/pages.js`.
+**Scroll.** After the bow opens, the pages sit edge to edge in one column and
+scroll naturally (Lenis smoothing); each page's top edge melts over the one before.
+Paintings lift and fade in as they arrive, headings get a gold sheen, and the
+countdown, location button and "Watch again" rise in (`src/scenes/pages.js`).
 
 ## QA screenshots
 

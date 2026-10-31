@@ -18,7 +18,7 @@ import { initCountdown } from './scenes/countdown.js';
 import { initNikah } from './scenes/nikah.js';
 import { initDinner } from './scenes/dinner.js';
 import { initCouple } from './scenes/couple.js';
-import { initPages, TOTAL } from './scenes/pages.js';
+import { initPages } from './scenes/pages.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -32,6 +32,7 @@ window.scrollTo(0, 0);
 const scenes = {
   seal: $('#s-seal'),
   bow: $('#s-bow'),
+  names: $('#s-names'),
   date: $('#s-date'),
   countdown: $('#s-countdown'),
   nikah: $('#s-nikah'),
@@ -62,8 +63,8 @@ async function start() {
   const bow = initBow(scenes.bow, { reduced });
   const date = initDate(scenes.date, { reduced });
   const countdown = initCountdown(scenes.countdown, { target: EVENT_DATETIME, reduced });
-  const nikah = initNikah(scenes.nikah, { mapUrl: MAP_URL });
-  initDinner(scenes.dinner);
+  initNikah(scenes.nikah);
+  const dinner = initDinner(scenes.dinner, { mapUrl: MAP_URL });
   const couple = initCouple(scenes.couple, { reduced, onReplay: replay });
 
   // Gentle Ken Burns on every painting (1 → 1.04).
@@ -75,13 +76,12 @@ async function start() {
   }
 
   initPages({
-    pages: [scenes.date, scenes.countdown, scenes.nikah, scenes.dinner, scenes.couple],
+    pages: [scenes.names, scenes.date, scenes.countdown, scenes.nikah, scenes.dinner, scenes.couple],
     reduced,
     countdownItems: countdown.items,
-    mapBtn: nikah.button,
+    mapBtn: dinner.button,
     replayBtn: couple.replay,
     onCoupleEnter: couple.start,
-    scroll,
   });
 
   await runLoader({ music, reduced, quick });
@@ -101,26 +101,26 @@ async function start() {
     },
   });
 
-  // ── Scene 2: the bow pulls tight, holds, then unties onto the date ──
+  // ── Scene 2: the bow forms, holds a moment, then opens by itself onto
+  //    the names card — no tap needed ──
   await bow.tie();
   petals.setCount(14);
-  await wait(reduced ? 0.8 : 1.4);
-  const dateIntro = scenes.date.querySelector('.intro');
-  if (!reduced) gsap.fromTo(dateIntro, { scale: 1.1 }, { scale: 1, duration: 2.4, ease: 'power2.out' });
+  await wait(reduced ? 0.6 : 0.9);
+  const namesIntro = scenes.names.querySelector('.intro');
+  if (!reduced) gsap.fromTo(namesIntro, { scale: 1.1 }, { scale: 1, duration: 2.4, ease: 'power2.out' });
   await bow.untie();
   $('#intro').remove();
 
-  // ── Scene 3: one tap anywhere reveals the date, then the pages scroll ──
-  const onDateTap = async (e) => {
-    if (date.revealed || e.target.closest?.('#music')) return;
+  // ── The pages: one continuous scroll ──
+  scroll.unlock();
+  scroll.hint(true);
+
+  // A tap anywhere on the date page reveals the date.
+  scenes.date.addEventListener('click', (e) => {
+    if (date.revealed) return;
     e.preventDefault();
-    document.removeEventListener('click', onDateTap, true);
-    await date.reveal();
-    scroll.allow(TOTAL);
-    scroll.unlock();
-    scroll.hint(true);
-  };
-  document.addEventListener('click', onDateTap, true);
+    date.reveal();
+  });
 }
 
 function replay() {
