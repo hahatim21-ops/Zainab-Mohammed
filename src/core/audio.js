@@ -1,12 +1,18 @@
 // Background music. Routed through Web Audio so the 0 → 0.6 fade also works
-// on iOS (where HTMLMediaElement.volume is read-only).
+// on iOS (where HTMLMediaElement.volume is read-only). Playback starts at
+// `startAt` seconds and loops back to that point, not to the beginning.
 
 export class Music {
-  constructor(src, volume = 0.6) {
+  constructor(src, volume = 0.6, startAt = 0) {
     this.src = src;
     this.volume = volume;
+    this.startAt = startAt;
     this.el = new Audio();
-    this.el.loop = true;
+    this.el.loop = false; // looped by hand, back to `startAt`
+    this.el.addEventListener('ended', () => {
+      this.el.currentTime = this.startAt;
+      if (!this.muted) this.el.play().catch(() => {});
+    });
     this.el.preload = 'auto';
     this.el.setAttribute('playsinline', '');
     this.available = false;
@@ -87,6 +93,11 @@ export class Music {
       }
     }
     this.el.volume = this.ctx ? 1 : 0;
+    const seek = () => {
+      if (this.startAt && this.el.duration > this.startAt) this.el.currentTime = this.startAt;
+    };
+    if (this.el.readyState >= 1) seek();
+    else this.el.addEventListener('loadedmetadata', seek, { once: true });
     const p = this.el.play();
     if (p) p.catch(() => {});
     this.fadeTo(this.volume, 3);

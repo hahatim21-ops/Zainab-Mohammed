@@ -43,7 +43,7 @@ music button stays hidden.
 | `COUPLE` | Names / families |
 | `EVENT_DATETIME` | Countdown target (`2026-11-14T16:00:00+05:30`) |
 | `MAP_URL` | "View location" button on the Dinner page (the residence) |
-| `MUSIC_SRC`, `MUSIC_VOLUME` | Track path and final volume (fades 0 → 0.6 over 3 s) |
+| `MUSIC_SRC`, `MUSIC_VOLUME`, `MUSIC_START` | Track path, final volume (fades 0 → 0.6 over 3 s) and start point in seconds (24 — it also loops back there) |
 | `SITE_URL`, `OG_IMAGE_URL` | **Fill in after deploying** — absolute URLs for the WhatsApp preview |
 | `META` | Page title, description, theme colour |
 

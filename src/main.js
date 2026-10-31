@@ -6,7 +6,7 @@ import './styles/ui.css';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-import { EVENT_DATETIME, MAP_URL, MUSIC_SRC, MUSIC_VOLUME } from './config.js';
+import { EVENT_DATETIME, MAP_URL, MUSIC_SRC, MUSIC_START, MUSIC_VOLUME } from './config.js';
 import { Music } from './core/audio.js';
 import { createScroll } from './core/scroll.js';
 import { Petals } from './effects/petals.js';
@@ -41,7 +41,8 @@ const scenes = {
 };
 
 // ── Music toggle ───────────────────────────────────────────────
-const music = new Music(MUSIC_SRC, MUSIC_VOLUME);
+const music = new Music(MUSIC_SRC, MUSIC_VOLUME, MUSIC_START);
+if (import.meta.env.DEV) window.__music = music;
 const musicBtn = $('#music');
 music.onChange((m) => {
   musicBtn.classList.toggle('is-playing', m.playing);
