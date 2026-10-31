@@ -349,12 +349,14 @@
   color: var(--olive);
 }
 
-/* Countdown merged onto the date page, in the open wall under إن شاء الله */
+/* Countdown merged onto the date page, in the open wall under إن شاء الله.
+   Centred on the printed date line (x 25–87%, centre 56%) and as wide as it,
+   spaced evenly between إن شاء الله (ends 61.5%) and the credit (79.5%). */
 .countdown-block {
   position: absolute;
-  left: 30%;
-  width: 54%;
-  top: 62.2%;
+  left: 25%;
+  width: 62%;
+  top: 62.7%;
   text-align: center;
   color: var(--olive);
   text-shadow: 0 0 1.6cqw rgba(248, 241, 228, 0.9);
@@ -366,8 +368,8 @@
   font-weight: 400;
   line-height: 1.15;
 }
-.cd-title { font-size: 6.6cqw; }
-.cd-sub { font-size: 5.2cqw; margin-top: 0.4cqw; }
+.cd-title { font-size: 6.2cqw; }
+.cd-sub { font-size: 5cqw; margin-top: 0.2cqw; }
 .countdown-block .countdown {
   position: static;
   left: auto;
@@ -375,7 +377,7 @@
   translate: none;
   margin-top: 0.6cqw;
 }
-.countdown-block .cd-num { font-size: 8cqw; }
+.countdown-block .cd-num { font-size: 7.6cqw; }
 .countdown-block .cd-label { font-size: 1.8cqw; margin-top: 0.7cqw; }
 
 /* ─── Scene 5 · Nikah ──────────────────────────────────────────── */
@@ -436,15 +438,15 @@
 .scroll-cta {
   position: absolute;
   left: 50%;
-  top: 89.5%;
+  top: 91%;
   translate: -50% -50%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.6cqw;
-  padding: 2.4cqw 7cqw 1.6cqw;
+  gap: 0.3cqw;
+  padding: 1.5cqw 4.6cqw 1cqw;
   border: 1px solid rgba(201, 169, 110, 0.95);
-  border-radius: 2.6cqw;
+  border-radius: 1.8cqw;
   background: rgba(250, 245, 235, 0.82);
   box-shadow: 0 1.2cqw 4cqw rgba(123, 91, 59, 0.2), inset 0 0 0 0.6cqw rgba(255, 255, 255, 0.35);
   color: var(--olive);
@@ -455,7 +457,7 @@
 .scroll-cta-text {
   font-family: var(--caps);
   font-weight: 600;
-  font-size: 3.4cqw;
+  font-size: 2.5cqw;
   letter-spacing: 0.24em;
   padding-left: 0.24em;
   text-transform: uppercase;
@@ -463,12 +465,12 @@
 .scroll-cta-sub {
   font-family: var(--serif);
   font-style: italic;
-  font-size: 3.6cqw;
+  font-size: 2.7cqw;
 }
 .scroll-cta svg {
-  width: 5.4cqw;
-  height: 5.4cqw;
-  margin-top: 0.4cqw;
+  width: 3.8cqw;
+  height: 3.8cqw;
+  margin-top: 0.1cqw;
   fill: none;
   stroke: var(--champagne);
   stroke-width: 1.8;
