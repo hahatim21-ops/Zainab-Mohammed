@@ -25,6 +25,10 @@ fs.mkdirSync(outAudio, { recursive: true });
 const W = 1080;
 const H = 1920;
 
+// How far the printed date on 03-date is lifted (% of height) — see liftDateText.
+const DATE_LIFT = 4.5;
+const DATE_BOX = { x0: 24, x1: 89, y0: 48.4, y1: 61 };
+
 // Match files by their numeric prefix so the descriptive filenames can stay as delivered.
 const SCENES = ['01-seal', '02-bow', '02b-names', '03-date', '05-nikah', '06-dinner', '07-couple'];
 const files = fs.readdirSync(assets);
@@ -37,7 +41,8 @@ for (const name of SCENES) {
     continue;
   }
   const src = path.join(assets, file);
-  const base = sharp(src).rotate().resize(W, H, { fit: 'cover', kernel: 'lanczos3' });
+  let base = sharp(src).rotate().resize(W, H, { fit: 'cover', kernel: 'lanczos3' });
+  if (name === '03-date') base = await liftDateText(base);
 
   await base.clone().webp({ quality: 82, effort: 5 }).toFile(path.join(outImg, `${name}.webp`));
   await base.clone().jpeg({ quality: 82, mozjpeg: true, progressive: true }).toFile(path.join(outImg, `${name}.jpg`));
@@ -52,6 +57,39 @@ for (const name of SCENES) {
 
   await extendPainting(base.clone(), path.join(outImg, `${name}-bands.webp`));
   console.log(`✓ ${name}  ←  ${file}`);
+}
+
+// 03-date has a big gap between "Date!" and the printed date. This lifts the
+// date line and إن شاء الله up by DATE_LIFT (% of height): the ink is lifted
+// off the wall with its anti-aliasing, the wall behind it is rebuilt, and the
+// ink is laid back down higher up. Overlay positions in scenes.css match.
+async function liftDateText(pipeline) {
+  const img = await pipeline.removeAlpha().raw().toBuffer();
+  const lum = (i) => 0.299 * img[i * 3] + 0.587 * img[i * 3 + 1] + 0.114 * img[i * 3 + 2];
+  const X0 = Math.round((W * DATE_BOX.x0) / 100), X1 = Math.round((W * DATE_BOX.x1) / 100);
+  const Y0 = Math.round((H * DATE_BOX.y0) / 100), Y1 = Math.round((H * DATE_BOX.y1) / 100);
+  // Ink = clearly darker than the wall; grown a few px so edges go too.
+  const ink = new Uint8Array(W * H);
+  for (let y = Y0; y < Y1; y++) for (let x = X0; x < X1; x++) if (lum(y * W + x) < 170) ink[y * W + x] = 1;
+  const hole = Buffer.alloc(W * H);
+  const R = 4;
+  for (let y = Y0; y < Y1; y++) for (let x = X0; x < X1; x++) {
+    if (!ink[y * W + x]) continue;
+    for (let dy = -R; dy <= R; dy++) for (let dx = -R; dx <= R; dx++) hole[(y + dy) * W + (x + dx)] = 255;
+  }
+  const clean = pushPullFill(img, hole, W, H);
+  const out = Buffer.from(clean);
+  const shift = Math.round((H * DATE_LIFT) / 100);
+  for (let y = Y0; y < Y1; y++) for (let x = X0; x < X1; x++) {
+    const i = y * W + x;
+    if (!hole[i]) continue;
+    const bg = 0.299 * clean[i * 3] + 0.587 * clean[i * 3 + 1] + 0.114 * clean[i * 3 + 2];
+    const a = Math.max(0, Math.min(1, (bg - lum(i) - 6) / Math.max(1, bg - 95)));
+    if (!a) continue;
+    const j = (y - shift) * W + x;
+    for (let c = 0; c < 3; c++) out[j * 3 + c] = Math.round(out[j * 3 + c] * (1 - a) + img[i * 3 + c] * a);
+  }
+  return sharp(out, { raw: { width: W, height: H, channels: 3 } });
 }
 
 // Phones are taller than 9:16. This makes the two 1080×360 bands that sit

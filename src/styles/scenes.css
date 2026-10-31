@@ -195,8 +195,8 @@
   mask-composite: intersect;
   overflow: hidden;
 }
-.veil-date { left: 12%; top: 43.5%; width: 88%; height: 14%; }
-.veil-ar { left: 36%; top: 53.6%; width: 36%; height: 11%; }
+.veil-date { left: 12%; top: 42.4%; width: 88%; height: 9.8%; }
+.veil-ar { left: 40%; top: 50.6%; width: 30%; height: 7.6%; }
 .veil-shimmer {
   position: absolute;
   inset: 0;
@@ -214,8 +214,8 @@
 /* Gold glint riding the edge of the wipe */
 .date-glint {
   position: absolute;
-  top: 45%;
-  height: 11%;
+  top: 43.6%;
+  height: 7%;
   left: 12%;
   width: 3.4cqw;
   translate: -50% 0;
@@ -230,7 +230,7 @@
 .date-tap {
   position: absolute;
   left: 56%;
-  top: 51%;
+  top: 48.6%;
   width: 16cqw;
   aspect-ratio: 1;
   translate: -50% -50%;
@@ -265,7 +265,7 @@
 .date-bloom {
   position: absolute;
   left: 56%;
-  top: 53%;
+  top: 48.6%;
   width: 90cqw;
   height: 26cqh;
   translate: -50% -50%;
@@ -351,12 +351,12 @@
 
 /* Countdown merged onto the date page, in the open wall under إن شاء الله.
    Centred on the printed date line (x 25–87%, centre 56%) and as wide as it,
-   spaced evenly between إن شاء الله (ends 61.5%) and the credit (79.5%). */
+   spaced evenly between إن شاء الله (ends 55.6%) and the credit. */
 .countdown-block {
   position: absolute;
   left: 25%;
   width: 62%;
-  top: 62.7%;
+  top: 59.9%;
   text-align: center;
   color: var(--olive);
   text-shadow: 0 0 1.6cqw rgba(248, 241, 228, 0.9);
