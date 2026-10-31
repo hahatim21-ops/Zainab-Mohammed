@@ -65,39 +65,20 @@
   background: radial-gradient(circle, rgba(255, 252, 240, 1) 0%, rgba(255, 236, 200, 0.85) 30%, rgba(248, 226, 180, 0.35) 55%, transparent 72%);
 }
 
-/* The opening flower: soft-edged pieces (built on tap), each in its own 3D
-   layer so none can be depth-sorted behind another */
-.wedges {
-  position: absolute;
-  inset: 0;
-  display: none;
-  z-index: 2;
+/* Opening: the bow scene shows through a growing, feathered rosette */
+#s-bow.is-revealing {
+  -webkit-mask-image: var(--rosette);
+  mask-image: var(--rosette);
+  -webkit-mask-size: var(--hole-size) var(--hole-size);
+  mask-size: var(--hole-size) var(--hole-size);
+  -webkit-mask-position: var(--hole-pos);
+  mask-position: var(--hole-pos);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
 }
-.persp {
-  position: absolute;
-  inset: 0;
-  perspective: 240cqw;
-  perspective-origin: var(--sx) var(--sy);
-  pointer-events: none;
-}
-.piece {
-  position: absolute;
-  transform-style: preserve-3d;
-}
-.piece .face {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-/* Underside of an envelope petal: same paper, a touch warmer and softer */
-.piece .face.back {
-  transform: rotateY(180deg) scaleX(-1);
-  filter: brightness(0.95) sepia(0.12);
-}
-.piece .face.wax { inset: auto; transform: translateZ(1px); }
+.seal-lift { z-index: 3; pointer-events: none; }
+.seal-piece { position: absolute; inset: 0; }
+.seal-piece img { position: absolute; inset: 0; width: 100%; height: 100%; }
 
 /* ─── Scene 2 · Bow ────────────────────────────────────────────── */
 
@@ -115,7 +96,7 @@
   perspective: 110cqw;
 }
 .untie .half { position: absolute; inset: 0; }
-.untie .half img { position: absolute; inset: 0; width: 100%; height: 100%; filter: blur(5px); }
+.untie .half img { position: absolute; inset: 0; width: 100%; height: 100%; }
 
 .glows {
   position: absolute;

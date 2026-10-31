@@ -1,9 +1,8 @@
 # Zainab & Mohammed — Nikah Invite
 
 A mobile-first, single-page invitation that plays like a short film:
-wax seal tapped → the envelope petals fold back and the flower blooms open onto
-the bow → the real lace bow pulls tight and holds; its tails are pulled, the loops
-slip through the knot and the lace falls open like curtains → tap to reveal the date (golden
+wax seal lifts → the flower opens softly onto the bow → the real lace bow pulls
+tight, holds, then unties as the curtains part → tap to reveal the date (golden
 wipe + confetti) → then one continuous, scrolling painting: countdown → Nikah →
 Dinner → the couple.
 
@@ -74,10 +73,8 @@ screen size. To nudge an overlay, edit its % in `src/styles/scenes.css` (or the
 coordinate constants at the top of `seal.js`, `bow.js`, `couple.js`).
 
 **Opening.** The seal and bow scenes are fixed layers above the pages (`#intro`).
-The flower is cut into soft-edged pieces at build time (envelope petals, the wax
-seal, and two rings of flower petals — outlines in `src/scenes/sealGeometry.js`,
-positions written to `sealPieces.generated.js`); `seal.js` folds and blooms them
-in 3D over the bow scene. The bow is the real one from `02-bow`: `npm run optimize` cuts it into
+The seal lifts away and the bow scene shows through a growing, feathered rosette
+(`seal.js`). The bow is the real one from `02-bow`: `npm run optimize` cuts it into
 pieces (tails, loops, knot) using the outlines in `src/scenes/bowGeometry.js` and
 rebuilds the background behind it (`02-bow-clean`), so `bow.js` can move the pieces.
 

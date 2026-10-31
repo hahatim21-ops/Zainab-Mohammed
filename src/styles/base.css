@@ -77,8 +77,9 @@ a { color: inherit; }
   overflow: hidden;
   contain: strict;
 }
-#s-seal { z-index: 2; }
-#s-bow { z-index: 1; }
+#s-seal { z-index: 1; }
+#s-bow { z-index: 2; }
+#s-bow.is-waiting { visibility: hidden; }
 
 /* ─── Pages: fixed, stacked layers that the scroll slides and dissolves ── */
 

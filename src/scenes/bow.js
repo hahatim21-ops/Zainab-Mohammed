@@ -5,9 +5,9 @@ import { KNOT, PART_ORDER } from './bowGeometry.js';
 
 // Scene 2: the lace bow is the real one from the photo, cut into its pieces
 // (tails, loops, knot) over a rebuilt background. It starts loose — loops
-// low and wide, tails slack — pulls up into place with a soft tug and holds.
-// To open, both tails are pulled, the loops slip back into the knot, and the
-// freed lace falls open to the sides like curtains onto the date page.
+// low and wide, tails slack — pulls up into place with a soft tug, holds,
+// then unties: the loops slip apart, the tails fall away and the curtains
+// part onto the date page.
 
 // Lantern and candle glows (x/y in %, size in cqw).
 const GLOWS = [
@@ -95,49 +95,45 @@ export function initBow(scene, { reduced }) {
     return tl.then(() => gsap.set(kb, { clearProps: 'filter' }));
   }
 
-  /** Opening: both tails are pulled, the loops slip back into the knot,
-   *  and the freed lace falls open to the sides like curtains. */
+  /** The bow unties and the curtains part onto the date page. */
   function untie() {
     if (reduced) return gsap.to(scene, { opacity: 0, duration: 0.9, ease: 'power1.inOut' }).then();
 
     const cqw = scene.querySelector('.stage').getBoundingClientRect().width / 100;
     const tl = gsap.timeline();
 
-    // The background softens (motion blur) so only the lace stays crisp
-    tl.fromTo(img, { filter: 'blur(0px)' }, { filter: 'blur(5px)', duration: 0.5, ease: 'power1.out' }, 0.05);
-    // A small tug up on the knot, as if someone takes hold of the tails
-    tl.to(parts.knot, { yPercent: -0.8, scaleX: 0.94, duration: 0.25, ease: 'power2.out' }, 0)
-      // Both tails are drawn down and outward…
-      .to(parts.tailL, { x: -9 * cqw, yPercent: 5, rotation: 7, scaleY: 1.08, duration: 1.0, ease: 'power2.in' }, 0.15)
-      .to(parts.tailR, { x: 9 * cqw, yPercent: 5, rotation: -7, scaleY: 1.08, duration: 1.0, ease: 'power2.in' }, 0.15)
-      .to([parts.tailL, parts.tailR], { opacity: 0, duration: 0.45, ease: 'power1.in' }, 0.75)
-      // …so the loops shrink back through the knot and vanish
-      .to(parts.loopL, { scale: 0.12, rotation: 14, duration: 0.8, ease: 'power3.in' }, 0.3)
-      .to(parts.loopR, { scale: 0.12, rotation: -14, duration: 0.8, ease: 'power3.in' }, 0.3)
-      .to([parts.loopL, parts.loopR], { opacity: 0, duration: 0.3, ease: 'power1.in' }, 0.8)
-      // …and the knot comes undone
-      .to(parts.knot, { scale: 0.3, opacity: 0, yPercent: 0, duration: 0.45, ease: 'power2.in' }, 0.85)
-      .add(() => sparkleBurst(fx, KNOT.x, KNOT.y, 14), 1.05)
-      .to(scene.querySelectorAll('.glows, .fx'), { opacity: 0, duration: 0.6 }, 1.2);
+    // The knot loosens; the loops slip outward and the tails sag
+    tl.to(parts.knot, { scale: 1.15, opacity: 0, duration: 0.7, ease: 'power2.in' }, 0)
+      .add(() => sparkleBurst(fx, KNOT.x, KNOT.y, 10), 0.1)
+      .to(parts.loopL, { x: -3 * cqw, rotation: -10, yPercent: 1.4, duration: 0.8, ease: 'power2.inOut' }, 0.1)
+      .to(parts.loopR, { x: 3 * cqw, rotation: 10, yPercent: 1.4, duration: 0.8, ease: 'power2.inOut' }, 0.12)
+      .to(parts.tailL, { rotation: 3, yPercent: 1.5, duration: 0.8, ease: 'power2.inOut' }, 0.15)
+      .to(parts.tailR, { rotation: -3, yPercent: 1.5, duration: 0.8, ease: 'power2.inOut' }, 0.17)
+      .to(scene.querySelectorAll('.glows, .fx'), { opacity: 0, duration: 0.6 }, 0.4);
 
-    // The freed lace falls open to both sides like curtains, onto the date.
+    // Then each side of the bow swings away with its curtain, and the camera
+    // moves through onto the date.
     tl.add(() => {
       const src = img.currentSrc || img.src;
       const left = half(src, 'left');
       const right = half(src, 'right');
+      left.append(parts.tailL, parts.loopL);
+      right.append(parts.tailR, parts.loopR);
       untieBox.append(left, right);
       untieBox.style.display = 'block';
       plate.style.visibility = 'hidden';
       glows.stop();
       gsap
         .timeline()
-        .to(left, { x: -62 * cqw, yPercent: 3, rotationY: 30, transformOrigin: '0% 30%', duration: 1.7, ease: 'power3.inOut' }, 0)
-        .to(right, { x: 62 * cqw, yPercent: 3, rotationY: -30, transformOrigin: '100% 30%', duration: 1.7, ease: 'power3.inOut' }, 0)
-        .to([left, right], { opacity: 0, duration: 0.8, ease: 'power1.in' }, 0.9);
-    }, 1.1)
-      .to(intro, { scale: 1.1, duration: 1.9, ease: 'power2.inOut' }, 1.1)
-      .to(scene.querySelectorAll('.scene-bg, .bands'), { opacity: 0, duration: 1.0, ease: 'power1.inOut' }, 1.15)
-      .to({}, { duration: 0.01 }, 2.9);
+        .to(left, { x: -66 * cqw, rotationY: 34, transformOrigin: '0% 50%', duration: 1.8, ease: 'power3.inOut' }, 0)
+        .to(right, { x: 66 * cqw, rotationY: -34, transformOrigin: '100% 50%', duration: 1.8, ease: 'power3.inOut' }, 0)
+        .to([parts.loopL, parts.loopR], { yPercent: '+=5', duration: 1.6, ease: 'power2.in' }, 0)
+        .to([parts.tailL, parts.tailR], { yPercent: '+=3', duration: 1.6, ease: 'power2.in' }, 0)
+        .to([left, right], { opacity: 0, duration: 0.8, ease: 'power1.in' }, 1.0);
+    }, 0.75)
+      .to(intro, { scale: 1.1, duration: 2.0, ease: 'power2.inOut' }, 0.75)
+      .to(scene.querySelectorAll('.scene-bg, .bands'), { opacity: 0, duration: 1.2, ease: 'power1.inOut' }, 0.9)
+      .to({}, { duration: 0.01 }, 2.6);
 
     return tl.then(() => {
       scene.style.display = 'none';
