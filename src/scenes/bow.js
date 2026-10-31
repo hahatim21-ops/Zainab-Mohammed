@@ -88,7 +88,7 @@ export function initBow(scene, { reduced }) {
   // fades away (a fade costs nothing; an animated blur repaints every frame).
   // (It is the original painting, bow included, laid above the pieces.)
   const soft = document.createElement('img');
-  soft.className = 'plate-soft';
+  soft.className = 'plate-soft preload';
   soft.src = '/images/02-bow.webp';
   soft.alt = '';
   soft.setAttribute('aria-hidden', 'true');

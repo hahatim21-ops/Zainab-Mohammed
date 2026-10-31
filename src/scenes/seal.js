@@ -76,6 +76,63 @@ export function initSeal(scene, { reduced, onTap, reveal }) {
   wrap.appendChild(inner);
   reveal.appendChild(wrap);
 
+  // The growing opening: geometry is measured on tap.
+  const hole = { s: 0 };
+  const geo = {};
+  const setHole = () => {
+    const k = Math.max(0.0005, hole.s / geo.maxSize);
+    wrap.style.transform = `scale(${k})`;
+    inner.style.transform = `scale(${1 / k})`;
+  };
+  function place() {
+    const r = stage.getBoundingClientRect();
+    const cx = r.left + (r.width * C.x) / 100;
+    const cy = r.top + (r.height * C.y) / 100;
+    const maxSize = Math.hypot(Math.max(cx, innerWidth - cx), Math.max(cy, innerHeight - cy)) * 2 * 1.9;
+    Object.assign(geo, { r, cx, cy, maxSize });
+    // The wrapper is a square the size of the full-grown rosette, centred
+    // on the seal (so it never clips its own mask); the inner layer is put
+    // back exactly over the screen.
+    const half = maxSize / 2;
+    Object.assign(wrap.style, {
+      inset: 'auto',
+      left: `${cx - half}px`,
+      top: `${cy - half}px`,
+      width: `${maxSize}px`,
+      height: `${maxSize}px`,
+      maskImage: `url(${rosetteUrl})`,
+      webkitMaskImage: `url(${rosetteUrl})`,
+      maskSize: '100% 100%',
+      webkitMaskSize: '100% 100%',
+      transformOrigin: '50% 50%',
+    });
+    Object.assign(inner.style, {
+      inset: 'auto',
+      left: `${half - cx}px`,
+      top: `${half - cy}px`,
+      width: `${innerWidth}px`,
+      height: `${innerHeight}px`,
+      transformOrigin: `${cx}px ${cy}px`,
+    });
+    setHole();
+  }
+
+  // Prepared before the tap (the bow scene is still hidden, so this costs
+  // no painting): the opening's geometry, and the seal that will lift away,
+  // in a twin stage with the same size and position as the artwork.
+  let liftStage, seal;
+  if (!reduced) {
+    place();
+    window.addEventListener('resize', place);
+    liftStage = document.createElement('div');
+    liftStage.className = 'stage seal-lift';
+    liftStage.style.visibility = 'hidden';
+    seal = copyLayer(img.currentSrc || img.src, 'seal-piece');
+    seal.style.clipPath = seal.style.webkitClipPath = `circle(${SEAL_R + 0.3}cqw at ${C.x}% ${C.y}%)`;
+    liftStage.appendChild(seal);
+    scene.after(liftStage);
+  }
+
   // Idle: slow breathing zoom.
   const origin = `${C.x}% ${C.y}%`;
   const idle = gsap.to(intro, { scale: 1.03, transformOrigin: origin, duration: 14, ease: 'sine.inOut', yoyo: true, repeat: -1 });
@@ -106,54 +163,14 @@ export function initSeal(scene, { reduced, onTap, reveal }) {
         return;
       }
 
-      // The seal travels above everything, in a twin stage with the same
-      // size and position as the artwork.
-      const liftStage = document.createElement('div');
-      liftStage.className = 'stage seal-lift';
-      const seal = copyLayer(img.currentSrc || img.src, 'seal-piece');
-      seal.style.clipPath = seal.style.webkitClipPath = `circle(${SEAL_R + 0.3}cqw at ${C.x}% ${C.y}%)`;
-      liftStage.appendChild(seal);
-      scene.after(liftStage);
+      // Everything below was prepared before the tap; now just show it.
+      liftStage.style.visibility = 'visible';
       gsap.set(seal, { scale: gsap.getProperty(intro, 'scale'), transformOrigin: origin });
 
       // Opening: the next scene shows through a growing rosette.
-      const r = stage.getBoundingClientRect();
-      const cx = r.left + (r.width * C.x) / 100;
-      const cy = r.top + (r.height * C.y) / 100;
-      const maxSize = Math.hypot(Math.max(cx, innerWidth - cx), Math.max(cy, innerHeight - cy)) * 2 * 1.9;
-      const hole = { s: 4 };
-      // The wrapper is a square the size of the full-grown rosette, centred
-      // on the seal (so it never clips its own mask); the inner layer is put
-      // back exactly over the screen.
-      const half = maxSize / 2;
-      Object.assign(wrap.style, {
-        inset: 'auto',
-        left: `${cx - half}px`,
-        top: `${cy - half}px`,
-        width: `${maxSize}px`,
-        height: `${maxSize}px`,
-        maskImage: `url(${rosetteUrl})`,
-        webkitMaskImage: `url(${rosetteUrl})`,
-        maskSize: '100% 100%',
-        webkitMaskSize: '100% 100%',
-        transformOrigin: '50% 50%',
-      });
-      Object.assign(inner.style, {
-        inset: 'auto',
-        left: `${half - cx}px`,
-        top: `${half - cy}px`,
-        width: `${innerWidth}px`,
-        height: `${innerHeight}px`,
-        transformOrigin: `${cx}px ${cy}px`,
-      });
-      const setHole = () => {
-        const k = Math.max(0.004, hole.s / maxSize);
-        wrap.style.transform = `scale(${k})`;
-        inner.style.transform = `scale(${1 / k})`;
-      };
-      setHole();
       reveal.classList.add('is-revealing');
       reveal.classList.remove('is-waiting');
+      const { r, maxSize } = geo;
 
       const tl = gsap.timeline();
       if (import.meta.env.DEV) window.__sealTl = tl;
@@ -173,6 +190,7 @@ export function initSeal(scene, { reduced, onTap, reveal }) {
       await tl;
       idle.kill();
       reveal.classList.remove('is-revealing', 'is-waiting');
+      window.removeEventListener('resize', place);
       wrap.removeAttribute('style');
       inner.removeAttribute('style');
       scene.style.display = 'none';
