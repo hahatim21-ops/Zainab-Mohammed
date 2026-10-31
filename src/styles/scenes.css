@@ -57,69 +57,16 @@
   50% { opacity: 1; transform: scale(1.015); }
 }
 
-/* Opening: the bow scene shows through a growing, feathered rosette */
-#s-bow.is-revealing {
-  -webkit-mask-image: var(--rosette);
-  mask-image: var(--rosette);
-  -webkit-mask-size: var(--hole-size) var(--hole-size);
-  mask-size: var(--hole-size) var(--hole-size);
-  -webkit-mask-position: var(--hole-pos);
-  mask-position: var(--hole-pos);
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-}
-.seal-lift { z-index: 3; pointer-events: none; }
-.seal-piece { position: absolute; inset: 0; }
-.seal-piece img { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* Warm light from inside the envelope as it opens */
 .seal-bloom {
-  position: absolute;
-  left: var(--sx);
-  top: var(--sy);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  translate: -50% -50%;
-}
-.seal-ring {
-  width: calc(var(--sd) * 1.12);
-  border: 0.35cqw solid rgba(214, 186, 128, 0.55);
-  box-shadow:
-    0 0 3cqw 1cqw rgba(226, 196, 132, 0.45),
-    inset 0 0 2cqw rgba(255, 236, 196, 0.5);
-  animation: ring-pulse 2.6s ease-in-out infinite;
-}
-@keyframes ring-pulse {
-  0%, 100% { transform: scale(0.96); opacity: 0.55; }
-  50% { transform: scale(1.08); opacity: 1; }
-}
-.seal-hit {
-  width: calc(var(--sd) * 1.6);
-  z-index: 5;
-  pointer-events: auto;
-}
-.seal-hit:focus-visible { outline-offset: -2cqw; }
-
-.seal-hint {
-  position: absolute;
-  left: 50%;
-  top: 88%;
-  margin: 0;
-  translate: -50% -50%;
-  white-space: nowrap;
-  font-family: var(--serif);
-  font-style: italic;
-  font-weight: 500;
-  font-size: 5.6cqw;
-  letter-spacing: 0.02em;
-  color: var(--olive);
-  text-shadow: 0 0 2cqw rgba(248, 241, 228, 0.95), 0 0 0.6cqw rgba(248, 241, 228, 0.9);
-  animation: breathe 3.2s ease-in-out infinite;
-}
-@keyframes breathe {
-  0%, 100% { opacity: 0.55; transform: scale(0.985); }
-  50% { opacity: 1; transform: scale(1.015); }
+  width: 40cqw;
+  opacity: 0;
+  z-index: 1;
+  background: radial-gradient(circle, rgba(255, 252, 240, 1) 0%, rgba(255, 236, 200, 0.85) 30%, rgba(248, 226, 180, 0.35) 55%, transparent 72%);
 }
 
-/* 3D unfolding envelope (pieces are built on tap) */
+/* The opening flower: soft-edged pieces (built on tap), each in its own 3D
+   layer so none can be depth-sorted behind another */
 .wedges {
   position: absolute;
   inset: 0;
@@ -129,45 +76,28 @@
 .persp {
   position: absolute;
   inset: 0;
-  perspective: 260cqw;
+  perspective: 240cqw;
   perspective-origin: var(--sx) var(--sy);
+  pointer-events: none;
 }
-.flap {
+.piece {
   position: absolute;
-  inset: 0;
   transform-style: preserve-3d;
 }
-.petals-outer,
-.env-inner,
-.face {
+.piece .face {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
-.petals-outer img,
-.env-inner img,
-.face img { position: absolute; inset: 0; width: 100%; height: 100%; }
-.face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-/* Underside of a petal: same paper texture, a little softer and warmer */
-.face.back img { filter: brightness(1.02) sepia(0.12) blur(0.6px); }
-.face.back::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(70% 60% at 50% 50%, rgba(255, 250, 240, 0.35), rgba(214, 196, 160, 0.3));
+/* Underside of an envelope petal: same paper, a touch warmer and softer */
+.piece .face.back {
+  transform: rotateY(180deg) scaleX(-1);
+  filter: brightness(0.95) sepia(0.12);
 }
-.back-x { transform: rotateY(180deg); }
-.back-y { transform: rotateX(180deg); }
-.seal-piece { transform: translateZ(1px); }
-.seal-hole {
-  -webkit-mask-image: radial-gradient(circle at var(--sx) var(--sy), transparent 11.4cqw, #000 11.9cqw);
-  mask-image: radial-gradient(circle at var(--sx) var(--sy), transparent 11.4cqw, #000 11.9cqw);
-}
-.seal-bloom {
-  width: 40cqw;
-  opacity: 0;
-  z-index: 1;
-  background: radial-gradient(circle, rgba(255, 252, 240, 1) 0%, rgba(255, 236, 200, 0.85) 30%, rgba(248, 226, 180, 0.35) 55%, transparent 72%);
-}
+.piece .face.wax { inset: auto; transform: translateZ(1px); }
 
 /* ─── Scene 2 · Bow ────────────────────────────────────────────── */
 
@@ -185,7 +115,7 @@
   perspective: 110cqw;
 }
 .untie .half { position: absolute; inset: 0; }
-.untie .half img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.untie .half img { position: absolute; inset: 0; width: 100%; height: 100%; filter: blur(5px); }
 
 .glows {
   position: absolute;

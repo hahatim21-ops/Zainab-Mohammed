@@ -30,8 +30,8 @@ for (const size of sizes) {
   for (const t of [0.7, 0.7, 0.7, 0.8]) { await wait(t); await shot('bow'); }
   await wait(1.4);
   await shot('bow-hold');
-  for (const t of [0.6, 0.6]) { await wait(t); await shot('untie'); }
-  await wait(1.6);
+  for (const t of [0.4, 0.4, 0.4, 0.4, 0.4, 0.4]) { await wait(t); await shot('untie'); }
+  await wait(0.8);
   await shot('date-veiled');
   await page.mouse.click(w / 2, h / 2);
   for (const t of [0.5, 0.5, 0.6, 1.4]) { await wait(t); await shot('date-reveal'); }

@@ -77,9 +77,8 @@ a { color: inherit; }
   overflow: hidden;
   contain: strict;
 }
-#s-seal { z-index: 1; }
-#s-bow { z-index: 2; }
-#s-bow.is-waiting { visibility: hidden; }
+#s-seal { z-index: 2; }
+#s-bow { z-index: 1; }
 
 /* ─── Pages: fixed, stacked layers that the scroll slides and dissolves ── */
 
@@ -127,9 +126,10 @@ a { color: inherit; }
   position: absolute;
   left: 50%;
   top: 50%;
-  /* Fill the screen height so paintings run edge to edge; on very tall
-     phones up to ~9% of each plain side edge is trimmed, never the text. */
-  width: min(calc(var(--view-h) * 9 / 16), 122vw);
+  /* The whole painting, always: full width on phones (taller screens get
+     the painting's own soft bands above and below), full height on wider
+     screens (with the blurred surround at the sides). */
+  width: min(100vw, calc(var(--view-h) * 9 / 16));
   aspect-ratio: 9 / 16;
   transform: translate(-50%, -50%);
   container-type: size;
@@ -150,14 +150,22 @@ a { color: inherit; }
 }
 .plate img { object-fit: cover; }
 
-/* Soft edge so the artwork melts into the blurred fill */
-.stage::after {
+/* Bands above and below the painting: its own edges mirrored and softened
+   (see scripts/optimize-images.mjs), so taller phones show no bars. */
+.bands { position: absolute; inset: 0; pointer-events: none; }
+.bands::before,
+.bands::after {
   content: '';
   position: absolute;
-  inset: -1px;
-  pointer-events: none;
-  box-shadow: 0 0 2.5cqw 1.2cqw rgba(248, 241, 228, 0.18);
+  left: 0;
+  width: 100%;
+  height: calc(100cqw / 3);
+  background-image: var(--bands);
+  background-size: 100% 200%;
+  background-repeat: no-repeat;
 }
+.bands::before { bottom: calc(100% - 1px); background-position: 50% 0; }
+.bands::after { top: calc(100% - 1px); background-position: 50% 100%; }
 
 #petals {
   position: fixed;

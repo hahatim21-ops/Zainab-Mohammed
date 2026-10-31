@@ -1,8 +1,9 @@
 # Zainab & Mohammed — Nikah Invite
 
 A mobile-first, single-page invitation that plays like a short film:
-wax seal lifts → the flower opens softly onto the bow → the real lace bow pulls
-tight, holds, then unties as the curtains part → tap to reveal the date (golden
+wax seal tapped → the envelope petals fold back and the flower blooms open onto
+the bow → the real lace bow pulls tight and holds; its tails are pulled, the loops
+slip through the knot and the lace falls open like curtains → tap to reveal the date (golden
 wipe + confetti) → then one continuous, scrolling painting: countdown → Nikah →
 Dinner → the couple.
 
@@ -63,15 +64,20 @@ scripts/              optimize-images.mjs, screenshots.mjs (QA)
 public/images|audio   generated assets
 ```
 
-**Layout system.** Each artwork sits in a `.stage` locked to 9:16 and fitted inside the
-viewport (never cropped). A blurred copy fills the leftover space. Every overlay is
+**Layout system.** Each artwork sits in a `.stage` locked to 9:16 and is always shown
+whole: full width on phones, full height on wider screens. Phones taller than 9:16
+get soft bands above and below made from the painting's own mirrored edges
+(`NN-bands.webp`), so the painting simply continues; wider screens get a blurred
+copy at the sides. Every overlay is
 positioned in % of the artwork and sized in `cqw`, so it stays aligned at every
 screen size. To nudge an overlay, edit its % in `src/styles/scenes.css` (or the
 coordinate constants at the top of `seal.js`, `bow.js`, `couple.js`).
 
 **Opening.** The seal and bow scenes are fixed layers above the pages (`#intro`).
-The seal lifts away and the bow scene shows through a growing, feathered rosette
-(`seal.js`). The bow is the real one from `02-bow`: `npm run optimize` cuts it into
+The flower is cut into soft-edged pieces at build time (envelope petals, the wax
+seal, and two rings of flower petals — outlines in `src/scenes/sealGeometry.js`,
+positions written to `sealPieces.generated.js`); `seal.js` folds and blooms them
+in 3D over the bow scene. The bow is the real one from `02-bow`: `npm run optimize` cuts it into
 pieces (tails, loops, knot) using the outlines in `src/scenes/bowGeometry.js` and
 rebuilds the background behind it (`02-bow-clean`), so `bow.js` can move the pieces.
 
