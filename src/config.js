@@ -18,7 +18,8 @@ export const MAP_URL = 'https://maps.app.goo.gl/mvNkSHeDNPXRAaBk7?g_st=iw';
 export const MUSIC_SRC = '/audio/music.mp3';
 export const MUSIC_VOLUME = 0.6;
 // Where the track starts (seconds); it also loops back to this point.
-export const MUSIC_START = 24;
+// (music.mp3 is already cut to begin at 0:24 of "Companion of Life".)
+export const MUSIC_START = 0;
 
 // Fill these in once the Vercel URL exists — they become the absolute
 // og:url / og:image that WhatsApp uses for the link preview.
