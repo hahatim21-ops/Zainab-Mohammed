@@ -18,7 +18,7 @@ import { initCountdown } from './scenes/countdown.js';
 import { initNikah } from './scenes/nikah.js';
 import { initDinner } from './scenes/dinner.js';
 import { initCouple } from './scenes/couple.js';
-import { initPages } from './scenes/pages.js';
+import { initPages, TOTAL } from './scenes/pages.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -81,15 +81,17 @@ async function start() {
     mapBtn: nikah.button,
     replayBtn: couple.replay,
     onCoupleEnter: couple.start,
+    scroll,
   });
 
   await runLoader({ music, reduced, quick });
 
-  // ── Scene 1: seal unfolds ──
+  // ── Scene 1: the seal lifts and the flower opens ──
   petals.setCount(5);
   petals.start();
   await initSeal(scenes.seal, {
     reduced,
+    reveal: scenes.bow,
     onTap: () => {
       music.start();
       if (music.available) {
@@ -99,10 +101,10 @@ async function start() {
     },
   });
 
-  // ── Scene 2: ribbon sweeps in, bow holds, then unties onto the date ──
+  // ── Scene 2: the bow pulls tight, holds, then unties onto the date ──
   await bow.tie();
   petals.setCount(14);
-  await wait(reduced ? 0.8 : 1.1);
+  await wait(reduced ? 0.8 : 1.4);
   const dateIntro = scenes.date.querySelector('.intro');
   if (!reduced) gsap.fromTo(dateIntro, { scale: 1.1 }, { scale: 1, duration: 2.4, ease: 'power2.out' });
   await bow.untie();
@@ -114,6 +116,7 @@ async function start() {
     e.preventDefault();
     document.removeEventListener('click', onDateTap, true);
     await date.reveal();
+    scroll.allow(TOTAL);
     scroll.unlock();
     scroll.hint(true);
   };

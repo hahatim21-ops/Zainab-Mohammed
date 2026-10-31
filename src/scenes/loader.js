@@ -22,7 +22,7 @@ export async function runLoader({ music, reduced, quick }) {
   const loader = document.getElementById('loader');
   const bar = loader.querySelector('.loader-line span');
 
-  const imgs = [...document.querySelectorAll('.plate img')];
+  const imgs = [...document.querySelectorAll('.plate img, img.preload')];
   imgs.forEach((img) => (img.loading = 'eager'));
   const bgs = [...document.querySelectorAll('.scene-bg')]
     .map((el) => el.style.backgroundImage.match(/url\(["']?(.*?)["']?\)/)?.[1])

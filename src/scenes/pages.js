@@ -2,74 +2,82 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { twinkleField } from '../effects/sparkles.js';
 
-// Motion for the scrolling pages (date → couple). The pages really scroll;
-// on top of that each painting drifts a little slower than the page
-// (parallax), arrives with a soft lift-and-fade, and recedes as it leaves.
+// The pages (date → couple) read as one continuous painting. Scrolling never
+// stops anything moving: each new page slides up with the finger, its
+// leading edge a long soft feather that melts over the page before it,
+// while that page drifts up more slowly behind it and softens.
+//
+// One scroll "screen" = one page change, so the motion matches the finger.
 
-// Where little gold twinkles live on each page (% of the artwork).
+export const TOTAL = 4.2; // screens of scroll after the date (4 changes + a short rest)
+
 const TWINKLE_ZONES = {
   's-nikah': { x0: 30, x1: 80, y0: 10, y1: 31 },
   's-dinner': { x0: 8, x1: 92, y0: 26, y1: 60 },
 };
 
-export function initPages({ pages, reduced, countdownItems, mapBtn, replayBtn, onCoupleEnter }) {
-  const byId = Object.fromEntries(pages.map((p) => [p.id, p]));
+export function initPages({ pages, reduced, countdownItems, mapBtn, replayBtn, onCoupleEnter, scroll }) {
+  const [date, countdown, nikah, dinner, couple] = pages;
+  const art = (p) => p.querySelector('.art');
 
-  pages.forEach((page, i) => {
-    const art = page.querySelector('.art');
-    const intro = page.querySelector('.intro');
-    const bg = page.querySelector('.scene-bg');
+  gsap.set(pages.slice(1), { yPercent: 100, '--fe': '0%' });
+  gsap.set(countdownItems, { autoAlpha: 0, y: 16 });
+  gsap.set([mapBtn, replayBtn], { autoAlpha: 0, y: 12 });
 
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' } });
+
+  for (let k = 1; k < pages.length; k++) {
+    const incoming = pages[k];
+    const outgoing = pages[k - 1];
+    const at = k - 1;
     if (reduced) {
-      if (i > 0) {
-        gsap.fromTo(intro, { opacity: 0.2 }, { opacity: 1, ease: 'none', scrollTrigger: { trigger: page, start: 'top 90%', end: 'top 35%', scrub: true } });
-      }
-      return;
+      tl.fromTo(incoming, { yPercent: 0, autoAlpha: 0 }, { autoAlpha: 1, duration: 1 }, at);
+      continue;
     }
+    // Arriving page: rides up with the finger, soft leading edge closing up
+    tl.fromTo(incoming, { yPercent: 100, '--fe': '34%' }, { yPercent: 0, '--fe': '0%', duration: 1 }, at)
+      // …its painting settles from a slight zoom
+      .fromTo(art(incoming), { scale: 1.08 }, { scale: 1, duration: 1, ease: 'power1.out' }, at)
+      // Leaving page: drifts up at a slower pace and softens behind it
+      .to(outgoing, { yPercent: -42, duration: 1 }, at)
+      .to(art(outgoing), { scale: 0.96, opacity: 0.3, duration: 1, ease: 'power1.out' }, at);
+  }
 
-    // Parallax: painting and backdrop drift at different speeds to the page.
-    const travel = { trigger: page, start: 'top bottom', end: 'bottom top', scrub: true };
-    gsap.fromTo(art, { yPercent: -7 }, { yPercent: 7, ease: 'none', scrollTrigger: travel });
-    gsap.fromTo(bg, { yPercent: 7 }, { yPercent: -7, ease: 'none', scrollTrigger: { ...travel } });
+  // Details that rise in as their page settles.
+  tl.to(countdownItems, { autoAlpha: 1, y: 0, duration: 0.25, stagger: 0.06, ease: 'power2.out' }, 0.6)
+    .to(mapBtn, { autoAlpha: 1, y: 0, duration: 0.25, ease: 'power2.out' }, 1.72)
+    .to(replayBtn, { autoAlpha: 1, y: 0, duration: 0.2, ease: 'power2.out' }, 3.95)
+    .to({}, { duration: 0.01 }, TOTAL - 0.01);
 
-    // Arrival: lifts and fades gently into place.
-    if (i > 0) {
-      gsap.fromTo(
-        intro,
-        { opacity: 0.2, scale: 1.07, yPercent: 6 },
-        { opacity: 1, scale: 1, yPercent: 0, ease: 'power1.out', scrollTrigger: { trigger: page, start: 'top bottom', end: 'top 15%', scrub: true } }
-      );
+  // Gold sheens loop only on the page that is on screen.
+  const sheens = pages.map((p) =>
+    [...p.querySelectorAll('.sheen span')].map((span) =>
+      gsap.fromTo(span, { xPercent: -110 }, { xPercent: 180, duration: 2.6, ease: 'sine.inOut', repeat: -1, repeatDelay: 3.6, paused: true })
+    )
+  );
+  let current = -1;
+  const onUpdate = () => {
+    const idx = Math.min(pages.length - 1, Math.round(tl.time()));
+    if (idx !== current) {
+      sheens.forEach((list, i) => list.forEach((s) => (i === idx ? s.restart(true) : s.pause())));
+      pages.forEach((p, i) => p.classList.toggle('is-active', i === idx));
+      current = idx;
     }
-    // Departure: recedes slightly as the next page takes over.
-    gsap.to(art, { opacity: 0.45, scale: 0.94, ease: 'power1.in', scrollTrigger: { trigger: page, start: 'bottom 75%', end: 'bottom top', scrub: true } });
+    if (tl.time() > 3.5) onCoupleEnter();
+  };
+  tl.eventCallback('onUpdate', onUpdate);
 
-    // Gold sheen across printed headings while the page is on screen.
-    page.querySelectorAll('.sheen span').forEach((span) => {
-      const sweep = gsap.fromTo(span, { xPercent: -110 }, { xPercent: 180, duration: 2.6, ease: 'sine.inOut', repeat: -1, repeatDelay: 3.6, paused: true });
-      ScrollTrigger.create({
-        trigger: page,
-        start: 'top 60%',
-        end: 'bottom 30%',
-        onToggle: (self) => (self.isActive ? sweep.restart(true) : sweep.pause()),
-      });
-    });
+  if (!reduced) {
+    for (const p of [nikah, dinner]) twinkleField(p.querySelector('.twinkles'), TWINKLE_ZONES[p.id], 6, 2.2);
+  }
 
-    const zone = TWINKLE_ZONES[page.id];
-    if (zone) twinkleField(page.querySelector('.twinkles'), zone, 6, 2.2);
+  ScrollTrigger.create({
+    start: 0,
+    end: () => TOTAL * scroll.unit,
+    scrub: true,
+    animation: tl,
   });
+  onUpdate();
 
-  const reveal = (targets, trigger, start, vars = {}) =>
-    gsap.fromTo(
-      targets,
-      { autoAlpha: 0, y: 18 },
-      { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power2.out', ...vars, scrollTrigger: { trigger, start, toggleActions: 'play none none reverse' } }
-    );
-
-  // Countdown units rise one after another.
-  reveal(countdownItems, byId['s-countdown'], 'top 45%', { stagger: 0.12 });
-  // Location button fades up once the Nikah details have settled.
-  reveal(mapBtn, byId['s-nikah'], 'top 30%', { delay: 0.2 });
-  // Finale: candles light, then "Watch again".
-  ScrollTrigger.create({ trigger: byId['s-couple'], start: 'top 70%', once: true, onEnter: onCoupleEnter });
-  reveal(replayBtn, byId['s-couple'], 'top 10%', { delay: 0.6 });
+  return { tl, date, countdown, couple };
 }

@@ -27,7 +27,7 @@ for (const size of sizes) {
   await page.click('.seal-hit');
   for (const t of [0.5, 0.5, 0.5, 0.6]) { await wait(t); await shot('opening'); }
   await wait(1.0);
-  for (const t of [0.7, 0.7, 0.7, 0.8]) { await wait(t); await shot('ribbon'); }
+  for (const t of [0.7, 0.7, 0.7, 0.8]) { await wait(t); await shot('bow'); }
   await wait(1.4);
   await shot('bow-hold');
   for (const t of [0.6, 0.6]) { await wait(t); await shot('untie'); }

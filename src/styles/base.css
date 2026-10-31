@@ -77,24 +77,33 @@ a { color: inherit; }
   overflow: hidden;
   contain: strict;
 }
-#s-seal { z-index: 2; }
-#s-bow { z-index: 1; }
+#s-seal { z-index: 1; }
+#s-bow { z-index: 2; }
+#s-bow.is-waiting { visibility: hidden; }
 
-/* ─── Scrolling pages ──────────────────────────────────────────── */
+/* ─── Pages: fixed, stacked layers that the scroll slides and dissolves ── */
 
-#pages { position: relative; z-index: 1; }
-.page {
-  position: relative;
-  height: var(--view-h);
+#pages {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
   overflow: hidden;
-  contain: paint;
 }
-/* Soft seam between pages: each page's blurred backdrop fades to ivory at
-   its top and bottom, so one painting flows into the next */
-.page .scene-bg {
-  -webkit-mask-image: linear-gradient(to bottom, transparent 4%, #000 16%, #000 84%, transparent 96%);
-  mask-image: linear-gradient(to bottom, transparent 4%, #000 16%, #000 84%, transparent 96%);
+.page {
+  --fe: 0%;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  contain: strict;
+  will-change: transform;
 }
+/* The arriving page's leading edge is a long soft feather, so one painting
+   melts into the next instead of meeting it at a line. */
+.page + .page {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 var(--fe));
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 var(--fe));
+}
+#track { width: 1px; height: 100vh; pointer-events: none; }
 
 /* Letterbox fill: blurred, brightened copy of the artwork */
 .scene-bg {
@@ -118,7 +127,9 @@ a { color: inherit; }
   position: absolute;
   left: 50%;
   top: 50%;
-  width: min(100vw, calc(var(--view-h) * 9 / 16));
+  /* Fill the screen height so paintings run edge to edge; on very tall
+     phones up to ~9% of each plain side edge is trimmed, never the text. */
+  width: min(calc(var(--view-h) * 9 / 16), 122vw);
   aspect-ratio: 9 / 16;
   transform: translate(-50%, -50%);
   container-type: size;

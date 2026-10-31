@@ -66,14 +66,14 @@
       </section>
 
       <!-- Scene 2 · Bow -->
-      <section class="scene" id="s-bow" aria-label="Lace bow">
+      <section class="scene is-waiting" id="s-bow" aria-label="Lace bow">
         <div class="scene-bg" style="background-image: url(/images/02-bow-bg.webp)"></div>
         <div class="stage"><div class="art"><div class="intro"><div class="kb">
           <picture class="plate">
-            <source srcset="/images/02-bow.webp" type="image/webp" />
-            <img src="/images/02-bow.jpg" width="1080" height="1920" alt="Ivory lace curtains gathered with a large lace bow above garden steps lit by lanterns" decoding="async" draggable="false" />
+            <source srcset="/images/02-bow-clean.webp" type="image/webp" />
+            <img src="/images/02-bow-clean.jpg" width="1080" height="1920" alt="Ivory lace curtains gathered with a large lace bow above garden steps lit by lanterns" decoding="async" draggable="false" />
           </picture>
-          <svg class="ribbon" viewBox="0 0 1080 1920" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <div class="bow-parts" aria-hidden="true"></div>
           <div class="untie" aria-hidden="true"></div>
           <div class="glows" aria-hidden="true"></div>
           <div class="fx" aria-hidden="true"></div>
@@ -172,6 +172,7 @@
     </div>
 
     <div id="curtain" aria-hidden="true"></div>
+    <div id="track" aria-hidden="true"></div>
 
     <noscript>
       <p style="padding:2rem;font-family:Georgia,serif;text-align:center">

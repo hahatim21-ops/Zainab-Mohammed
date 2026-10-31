@@ -1,69 +1,69 @@
 import { gsap } from 'gsap';
 
-// Scene 1: the guest taps the wax seal and the envelope unfolds like the
-// reference film — the top flap lifts back on its hinge, the side flaps swing
-// open (the seal stays whole and rides away on the left flap) and the outer
-// petals of the flower bloom outward, revealing the bow scene underneath.
-//
-// Every piece is a clipped copy of the same artwork, so nothing is redrawn.
-// Geometry is in % of the artwork, measured from 01-seal.
+// Scene 1: the guest taps the wax seal. The seal lifts off whole and fades;
+// the flower then opens from the centre — the bow scene (layered above, with
+// `reveal`) shows through a soft, feathered, petal-shaped opening that grows
+// while the outer petals drift outward and soften. No cut lines, no flaps.
 
-const C = { x: 52.4, y: 51.9 }; // seal centre
+const C = { x: 52.4, y: 51.9 }; // seal centre, % of the artwork
 const SEAL_R = 11.6; // seal radius, % of width
 
-// Envelope outline (clockwise from the left shoulder).
-const ENVELOPE = [
-  [21.4, 32.9], [28, 28], [38, 24.5], [52.4, 22.6], [63, 25], [75, 29], [83, 32.9],
-  [83.5, 40], [83, 48.8], [81.5, 55], [78.9, 60.6], [70, 66], [60, 72], [51.2, 76.5],
-  [42, 72], [33, 67.5], [26.9, 63.2], [25, 57], [24.1, 51.4], [22.5, 42],
-];
+// A soft rosette (eight rounded petals around a disc) used as the opening's
+// shape. Drawn once; the animation only grows it. The shadow trick gives a
+// feathered edge in every browser.
+function rosette(size = 768) {
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  const g = c.getContext('2d');
+  const cx = size / 2;
+  const away = size * 3;
+  const draw = (blur, alpha, grow) => {
+    g.save();
+    g.translate(cx - away, cx);
+    g.beginPath();
+    const petals = 8;
+    for (let i = 0; i < petals; i++) {
+      const a = (i / petals) * Math.PI * 2 + 0.2;
+      const r = size * 0.2 * grow * (1 + 0.06 * Math.sin(i * 2.3));
+      g.ellipse(Math.cos(a) * r * 0.72, Math.sin(a) * r * 0.72, r * 0.62, r * 0.4, a, 0, Math.PI * 2);
+    }
+    g.moveTo(size * 0.17 * grow, 0);
+    g.arc(0, 0, size * 0.17 * grow, 0, Math.PI * 2);
+    g.shadowColor = `rgba(0,0,0,${alpha})`;
+    g.shadowBlur = blur;
+    g.shadowOffsetX = away;
+    g.fillStyle = '#000';
+    g.fill('nonzero');
+    g.restore();
+  };
+  draw(size * 0.06, 0.5, 1.12);
+  draw(size * 0.035, 1, 1);
+  return c.toDataURL('image/png');
+}
 
-const FLAPS = {
-  top: {
-    poly: [[21.4, 32.9], [28, 28], [38, 24.5], [52.4, 22.6], [63, 25], [75, 29], [83, 32.9], [59.7, 42.1], [56, 40], [52.4, 39.6], [48, 40.3], [44.2, 42.1]],
-    origin: '50% 29%',
-    back: 'x', // back face is pre-mirrored on x, then flipped with rotateY
-  },
-  left: {
-    poly: [[21.4, 32.9], [44.2, 42.1], [48, 44.2], [52.4, 46.4], [52.4, 59], [51.2, 76.5], [42, 72], [33, 67.5], [26.9, 63.2], [25, 57], [24.1, 51.4], [22.5, 42]],
-    origin: '23% 52%',
-    back: 'y',
-  },
-  right: {
-    poly: [[83, 32.9], [59.7, 42.1], [55.1, 45.7], [52.4, 46.4], [52.4, 59], [51.2, 76.5], [60, 72], [70, 66], [78.9, 60.6], [81.5, 55], [83, 48.8], [83.5, 40]],
-    origin: '83% 50%',
-    back: 'y',
-  },
-};
-
-const fmt = (pts) => pts.map(([x, y]) => `${x.toFixed(2)}% ${y.toFixed(2)}%`).join(',');
-const mirror = (pts, axis) => pts.map(([x, y]) => (axis === 'x' ? [100 - x, y] : [x, 100 - y]));
-
-function layer(src, cls, clip) {
+function copyLayer(src, cls) {
   const d = document.createElement('div');
   d.className = cls;
-  if (clip) d.style.clipPath = d.style.webkitClipPath = `polygon(${clip})`;
-  if (src) {
-    const img = document.createElement('img');
-    img.src = src;
-    img.alt = '';
-    img.draggable = false;
-    d.appendChild(img);
-  }
+  const img = document.createElement('img');
+  img.src = src;
+  img.alt = '';
+  img.draggable = false;
+  d.appendChild(img);
   return d;
 }
 
-export function initSeal(scene, { reduced, onTap }) {
+export function initSeal(scene, { reduced, onTap, reveal }) {
   const plate = scene.querySelector('.plate');
   const img = plate.querySelector('img');
   const hit = scene.querySelector('.seal-hit');
   const ring = scene.querySelector('.seal-ring');
   const hint = scene.querySelector('.seal-hint');
-  const glow = scene.querySelector('.seal-bloom');
-  const box = scene.querySelector('.wedges');
+  const intro = scene.querySelector('.intro');
+  const stage = scene.querySelector('.stage');
 
   // Idle: slow breathing zoom.
-  const idle = gsap.to(scene.querySelector('.intro'), { scale: 1.035, duration: 14, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+  const origin = `${C.x}% ${C.y}%`;
+  const idle = gsap.to(intro, { scale: 1.03, transformOrigin: origin, duration: 14, ease: 'sine.inOut', yoyo: true, repeat: -1 });
 
   return new Promise((resolve) => {
     let fired = false;
@@ -82,82 +82,63 @@ export function initSeal(scene, { reduced, onTap }) {
     async function open() {
       gsap.killTweensOf([ring, hint]);
       ring.style.animation = hint.style.animation = 'none';
+      idle.pause();
 
       if (reduced) {
+        reveal.classList.remove('is-waiting');
         await gsap.to(scene, { opacity: 0, duration: 1, ease: 'power1.inOut' });
-        idle.kill();
         scene.style.display = 'none';
         return;
       }
 
-      const src = img.currentSrc || img.src;
+      // The seal travels above everything, in a twin stage with the same
+      // size and position as the artwork.
+      const liftStage = document.createElement('div');
+      liftStage.className = 'stage seal-lift';
+      const seal = copyLayer(img.currentSrc || img.src, 'seal-piece');
+      seal.style.clipPath = seal.style.webkitClipPath = `circle(${SEAL_R + 0.3}cqw at ${C.x}% ${C.y}%)`;
+      liftStage.appendChild(seal);
+      scene.after(liftStage);
+      gsap.set(seal, { scale: gsap.getProperty(intro, 'scale'), transformOrigin: origin });
 
-      // ── Build the pieces (only now, so they cost nothing while idle) ──
-      // The flower around the envelope (envelope cut out, even-odd).
-      const outer = layer(src, 'petals-outer', `evenodd, 0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, ${fmt(ENVELOPE)}, ${fmt([ENVELOPE[0]])}, 0% 0%`);
-      // The envelope as printed, under the flaps — keeps the inner opening
-      // dark until the flaps start to move.
-      const inner = layer(src, 'env-inner', fmt(ENVELOPE));
+      // Opening: the next scene shows through a growing rosette.
+      const r = stage.getBoundingClientRect();
+      const cx = r.left + (r.width * C.x) / 100;
+      const cy = r.top + (r.height * C.y) / 100;
+      const maxSize = Math.hypot(Math.max(cx, innerWidth - cx), Math.max(cy, innerHeight - cy)) * 2 * 1.9;
+      const hole = { s: 0 };
+      reveal.style.setProperty('--rosette', `url(${rosette()})`);
+      const setHole = () => {
+        const s = Math.max(2, hole.s);
+        reveal.style.setProperty('--hole-size', `${s}px`);
+        reveal.style.setProperty('--hole-pos', `${cx - s / 2}px ${cy - s / 2}px`);
+      };
+      setHole();
+      reveal.classList.add('is-revealing');
+      reveal.classList.remove('is-waiting');
 
-      const flaps = {};
-      for (const [name, f] of Object.entries(FLAPS)) {
-        const flap = layer(null, `flap flap-${name}`);
-        flap.style.transformOrigin = f.origin;
-        const front = layer(src, 'face front', fmt(f.poly));
-        const back = layer(src, `face back back-${f.back}`, fmt(mirror(f.poly, f.back)));
-        flap.append(back, front);
-        flaps[name] = flap;
-      }
-      // The right flap must not repeat the half of the seal it sits under.
-      flaps.right.querySelector('.front').classList.add('seal-hole');
-      // The seal stays whole and travels with the left flap.
-      const seal = layer(src, 'face seal-piece', null);
-      seal.style.clipPath = seal.style.webkitClipPath = `circle(${SEAL_R + 0.4}cqw at ${C.x}% ${C.y}%)`;
-      flaps.left.appendChild(seal);
-
-      // Flower and envelope base stay flat; only the flaps live in 3D, so they
-      // always paint above the petals.
-      box.before(outer, inner);
-      // Each flap gets its own perspective layer, painted in order, so no
-      // flap can ever be depth-sorted behind another.
-      for (const name of ['right', 'left', 'top']) {
-        const persp = layer(null, 'persp');
-        persp.appendChild(flaps[name]);
-        box.appendChild(persp);
-      }
-      box.style.display = 'block';
-      plate.style.visibility = 'hidden';
-
-      const origin = `${C.x}% ${C.y}%`;
       const tl = gsap.timeline();
       if (import.meta.env.DEV) window.__sealTl = tl;
-
-      tl.to([ring, hint], { opacity: 0, duration: 0.4, ease: 'power1.out' }, 0)
-        // A gentle press on the seal
-        .fromTo(seal, { scale: 1, transformOrigin: origin }, { scale: 0.94, duration: 0.18, ease: 'power2.in' }, 0)
-        .to(seal, { scale: 1, duration: 0.5, ease: 'back.out(3)' }, 0.18)
-        .to(inner, { opacity: 0, duration: 0.5, ease: 'sine.inOut' }, 0.3)
-        // Warm light escaping from inside
-        .fromTo(glow, { opacity: 0, scale: 0.4 }, { opacity: 0.45, scale: 2.2, duration: 1.4, ease: 'sine.out' }, 0.5)
-        .to(glow, { opacity: 0, duration: 1.0, ease: 'sine.in' }, 1.9)
-        // Top flap lifts back over its hinge
-        .to(flaps.top, { rotationX: 168, duration: 1.3, ease: 'power2.inOut' }, 0.25)
-        // Side flaps swing open, one after the other, and settle on the petals
-        .to(flaps.left, { rotationY: -166, duration: 1.35, ease: 'power2.inOut' }, 0.7)
-        .to(flaps.right, { rotationY: 166, duration: 1.35, ease: 'power2.inOut' }, 0.85)
-        // The flower opens wider around them
-        .to(outer, { scale: 1.12, transformOrigin: origin, duration: 2.4, ease: 'power1.inOut' }, 0.6)
-        // Then the camera moves into the opening, onto the bow scene
-        .to([outer, inner, box], { scale: '+=1.2', transformOrigin: origin, duration: 1.2, ease: 'power2.in' }, 2.15)
-        .to([outer, box], { opacity: 0, duration: 0.7, ease: 'power1.in' }, 2.6)
-        .to(scene.querySelector('.scene-bg'), { opacity: 0, duration: 1.2, ease: 'power1.inOut' }, 0.9);
+      tl.to([ring, hint], { opacity: 0, duration: 0.5, ease: 'power1.out' }, 0)
+        // The seal is pressed, then lifts away whole
+        .to(seal, { scale: '-=0.05', duration: 0.18, ease: 'power2.in' }, 0)
+        .to(seal, { scale: '+=0.2', y: -r.width * 0.06, duration: 1.3, ease: 'power2.out' }, 0.18)
+        .fromTo(seal, { filter: 'drop-shadow(0 0 0 rgba(80,70,50,0))' }, { filter: 'drop-shadow(0 18px 18px rgba(80,70,50,.28))', duration: 0.8, ease: 'sine.out' }, 0.18)
+        .to(seal, { opacity: 0, duration: 0.8, ease: 'power1.in' }, 0.95)
+        // The flower opens from the centre
+        // (first just wide enough to open the seal's spot as it lifts)
+        .to(hole, { s: r.width * 0.42, duration: 0.45, ease: 'power2.out', onUpdate: setHole }, 0.12)
+        .to(hole, { s: maxSize, duration: 2.1, ease: 'power2.in', onUpdate: setHole }, 0.57)
+        // …while the outer petals drift outward and soften
+        .to(intro, { scale: 1.22, duration: 2.4, ease: 'power1.in' }, 0.35)
+        .fromTo(plate, { filter: 'blur(0px) brightness(1)' }, { filter: 'blur(5px) brightness(1.06)', duration: 2.2, ease: 'power1.in' }, 0.5)
+        .to(scene.querySelector('.scene-bg'), { opacity: 0, duration: 1.4, ease: 'power1.in' }, 1.0);
 
       await tl;
       idle.kill();
+      reveal.classList.remove('is-revealing', 'is-waiting');
       scene.style.display = 'none';
-      box.innerHTML = '';
-      outer.remove();
-      inner.remove();
+      liftStage.remove();
     }
   });
 }

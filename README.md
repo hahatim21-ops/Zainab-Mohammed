@@ -1,9 +1,10 @@
 # Zainab & Mohammed — Nikah Invite
 
 A mobile-first, single-page invitation that plays like a short film:
-wax seal → the envelope's petals fold open → a satin ribbon sweeps in and leaves the
-bow behind → the bow unties and the curtains part → tap to reveal the date (golden
-wipe + confetti) → then real scrolling pages: countdown → Nikah → Dinner → the couple.
+wax seal lifts → the flower opens softly onto the bow → the real lace bow pulls
+tight, holds, then unties as the curtains part → tap to reveal the date (golden
+wipe + confetti) → then one continuous, scrolling painting: countdown → Nikah →
+Dinner → the couple.
 
 Built with Vite (vanilla JS), GSAP + ScrollTrigger, Lenis and canvas-confetti.
 
@@ -55,7 +56,7 @@ index.html            all scenes as fixed, stacked layers (+ share meta tags)
 src/main.js           orchestration: loader → seal → bow → scroll film
 src/config.js         editable details
 src/core/             audio (Web Audio fade, iOS-safe), scroll (Lenis + locks)
-src/scenes/           one file per scene + pages.js (scroll motion for the pages)
+src/scenes/           one file per scene, pages.js (scroll), bowGeometry.js (bow outlines)
 src/effects/          petals canvas, sparkles, glows, confetti
 src/styles/           base (layout system), scenes (overlay positions), ui
 scripts/              optimize-images.mjs, screenshots.mjs (QA)
@@ -68,18 +69,16 @@ positioned in % of the artwork and sized in `cqw`, so it stays aligned at every
 screen size. To nudge an overlay, edit its % in `src/styles/scenes.css` (or the
 coordinate constants at the top of `seal.js`, `bow.js`, `couple.js`).
 
-**Opening.** The seal and bow scenes are fixed layers above the page (`#intro`).
-The seal fold is built from clipped copies of the artwork (flap shapes and hinges are
-the constants at the top of `seal.js`); the ribbon route is `ROUTE` in `bow.js`.
+**Opening.** The seal and bow scenes are fixed layers above the pages (`#intro`).
+The seal lifts away and the bow scene shows through a growing, feathered rosette
+(`seal.js`). The bow is the real one from `02-bow`: `npm run optimize` cuts it into
+pieces (tails, loops, knot) using the outlines in `src/scenes/bowGeometry.js` and
+rebuilds the background behind it (`02-bow-clean`), so `bow.js` can move the pieces.
 
-**Scroll.** After the date is tapped the pages scroll naturally (Lenis smoothing).
-Each painting drifts slightly slower than the page (parallax), lifts and fades in as
-it arrives and recedes as it leaves; headings get a gold sheen, and the countdown,
-location button and "Watch again" rise in. All of it is in `src/scenes/pages.js`.
-
-**Accessibility.** Image alt text carries the event details, buttons have labels,
-focus is visible, and `prefers-reduced-motion` gets simple fades, no particles and
-lighter confetti.
+**Scroll.** After the date is tapped, every scroll moves the paintings: each new
+page slides up with your finger, its top edge a long soft feather that melts over
+the page before it, while that page drifts up more slowly and fades. One screen of
+scroll = one page change. Timings live in `src/scenes/pages.js`.
 
 ## QA screenshots
 
@@ -93,9 +92,12 @@ node scripts/screenshots.mjs screenshots 360x640,390x844,430x932,1440x900
 
 ## Deploy
 
-_To be filled in once the GitHub repo and Vercel project exist._
+- Live: https://zainab-mohammed.vercel.app
+- Repo: https://github.com/hahatim21-ops/Zainab-Mohammed
 
-- [ ] Push to GitHub
-- [ ] Import into Vercel (framework: Vite — `vercel.json` already sets build command, output dir and cache headers)
-- [ ] Set `SITE_URL` in `src/config.js` to the Vercel URL, redeploy
-- [ ] Check the WhatsApp preview (e.g. via the Facebook Sharing Debugger)
+The Vercel project is connected to the repo, so every push to `main` deploys
+automatically. `vercel.json` sets the build command, output folder and caching.
+To deploy by hand instead: `vercel --prod`.
+
+After changing the share text or image, re-scrape the link in the Facebook Sharing
+Debugger so WhatsApp picks up the new preview.
