@@ -1,0 +1,151 @@
+/* ─── Loader ───────────────────────────────────────────────────── */
+
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background:
+    radial-gradient(120% 80% at 50% 45%, #fbf7ee 0%, var(--ivory) 55%, var(--cream) 100%);
+}
+.monogram {
+  width: min(64vw, 300px);
+  overflow: visible;
+}
+.monogram text {
+  font-family: var(--caps);
+  font-size: 74px;
+  font-weight: 400;
+  letter-spacing: 4px;
+  fill: rgba(201, 169, 110, 0);
+  stroke: var(--champagne);
+  stroke-width: 0.9;
+  stroke-dasharray: 520;
+  stroke-dashoffset: 520;
+  animation: draw 2.4s cubic-bezier(0.55, 0.1, 0.3, 1) 0.15s forwards, fill-in 1.2s ease 1.9s forwards;
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes fill-in { to { fill: rgba(201, 169, 110, 0.92); stroke-width: 0.3; } }
+
+.loader-line {
+  position: relative;
+  width: min(42vw, 180px);
+  height: 1px;
+  background: rgba(201, 169, 110, 0.22);
+  overflow: hidden;
+}
+.loader-line span {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(201, 169, 110, 0.4), var(--champagne));
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+
+/* ─── Music toggle ─────────────────────────────────────────────── */
+
+#music {
+  position: fixed;
+  top: calc(14px + var(--safe-t));
+  right: calc(14px + var(--safe-r));
+  z-index: 100;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 169, 110, 0.85);
+  background: rgba(250, 245, 235, 0.72);
+  box-shadow: 0 4px 16px rgba(123, 91, 59, 0.14), inset 0 0 0 3px rgba(255, 255, 255, 0.35);
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transition: opacity 0.6s ease, transform 0.2s ease;
+}
+#music.is-visible { opacity: 1; }
+#music:active { transform: scale(0.94); }
+#music[hidden] { display: none; }
+.eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 2.5px;
+  height: 14px;
+}
+.eq i {
+  display: block;
+  width: 2px;
+  height: 100%;
+  border-radius: 1px;
+  background: var(--champagne);
+  transform-origin: 50% 100%;
+  transform: scaleY(0.25);
+}
+#music.is-playing .eq i { animation: eq 1s ease-in-out infinite; }
+#music.is-playing .eq i:nth-child(2) { animation-duration: 0.8s; animation-delay: -0.3s; }
+#music.is-playing .eq i:nth-child(3) { animation-duration: 1.15s; animation-delay: -0.6s; }
+#music.is-playing .eq i:nth-child(4) { animation-duration: 0.9s; animation-delay: -0.15s; }
+@keyframes eq {
+  0%, 100% { transform: scaleY(0.25); }
+  50% { transform: scaleY(1); }
+}
+#music:not(.is-playing)::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 1px;
+  background: var(--champagne);
+  transform: rotate(-45deg);
+}
+
+/* ─── Scroll hint ──────────────────────────────────────────────── */
+
+#scroll-hint {
+  position: fixed;
+  left: 50%;
+  bottom: calc(14px + var(--safe-b));
+  z-index: 90;
+  translate: -50% 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--caps);
+  font-size: 10.5px;
+  letter-spacing: 0.34em;
+  padding-left: 0.34em;
+  text-transform: uppercase;
+  color: var(--olive);
+  text-shadow: 0 0 10px rgba(248, 241, 228, 1), 0 0 3px rgba(248, 241, 228, 1);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.7s ease, visibility 0.7s;
+  pointer-events: none;
+}
+#scroll-hint.is-visible { opacity: 1; visibility: visible; }
+#scroll-hint svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: var(--champagne);
+  stroke-width: 1.6;
+  filter: drop-shadow(0 0 4px rgba(248, 241, 228, 1));
+  animation: chevron 1.8s ease-in-out infinite;
+}
+@keyframes chevron {
+  0%, 100% { transform: translateY(-2px); opacity: 0.5; }
+  50% { transform: translateY(4px); opacity: 1; }
+}
+
+/* ─── Reduced motion ───────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .seal-ring,
+  .seal-hint,
+  .veil-shimmer,
+  #scroll-hint svg { animation: none; }
+  .seal-hint { opacity: 1; }
+  .monogram text { animation-duration: 0.6s, 0.4s; animation-delay: 0s, 0.4s; }
+}

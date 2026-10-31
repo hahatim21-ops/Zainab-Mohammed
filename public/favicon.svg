@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <radialGradient id="w" cx="40%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#C2C6A6"/>
+      <stop offset="1" stop-color="#8E9470"/>
+    </radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="31" fill="#F8F1E4"/>
+  <circle cx="32" cy="32" r="27" fill="url(#w)"/>
+  <circle cx="32" cy="32" r="23.5" fill="none" stroke="#F8F1E4" stroke-opacity=".55" stroke-width="1"/>
+  <text x="32" y="41" text-anchor="middle" font-family="Cinzel, 'Cormorant Garamond', Georgia, serif" font-size="24" fill="#F8F1E4" letter-spacing="-1">Z&amp;M</text>
+</svg>

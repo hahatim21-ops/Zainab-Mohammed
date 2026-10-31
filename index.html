@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>%TITLE%</title>
+    <meta name="description" content="%DESCRIPTION%" />
+    <meta name="theme-color" content="%THEME_COLOR%" />
+    <meta name="color-scheme" content="light" />
+
+    <!-- Share preview (WhatsApp / Open Graph / Twitter) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Zainab &amp; Mohammed" />
+    <meta property="og:title" content="%TITLE%" />
+    <meta property="og:description" content="%DESCRIPTION%" />
+    <meta property="og:url" content="%SITE_URL%" />
+    <meta property="og:image" content="%OG_IMAGE%" />
+    <meta property="og:image:secure_url" content="%OG_IMAGE%" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Zainab &amp; Mohammed — 14 November 2026" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="%TITLE%" />
+    <meta name="twitter:description" content="%DESCRIPTION%" />
+    <meta name="twitter:image" content="%OG_IMAGE%" />
+    <link rel="canonical" href="%SITE_URL%" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Pinyon+Script&display=swap"
+    />
+    <link rel="preload" as="image" href="/images/01-seal.webp" type="image/webp" fetchpriority="high" />
+  </head>
+  <body>
+    <!-- Scene 0 · Loader -->
+    <div id="loader" role="status" aria-live="polite" aria-label="Loading the invitation">
+      <svg class="monogram" viewBox="0 0 300 140" aria-hidden="true">
+        <text x="150" y="98" text-anchor="middle">Z &amp; M</text>
+      </svg>
+      <div class="loader-line"><span></span></div>
+    </div>
+
+    <!-- Opening sequence: fixed overlays above the page until the bow unties -->
+    <div id="intro">
+      <!-- Scene 1 · Wax seal -->
+      <section class="scene" id="s-seal" aria-label="Sealed invitation">
+        <div class="scene-bg" style="background-image: url(/images/01-seal-bg.webp)"></div>
+        <div class="stage"><div class="art"><div class="intro"><div class="kb">
+          <picture class="plate">
+            <source srcset="/images/01-seal.webp" type="image/webp" />
+            <img src="/images/01-seal.jpg" width="1080" height="1920" alt="A cream petal envelope closed with a sage-green wax seal engraved Z&amp;M" fetchpriority="high" decoding="async" draggable="false" />
+          </picture>
+          <div class="wedges" aria-hidden="true"></div>
+          <div class="seal-ring" aria-hidden="true"></div>
+          <div class="seal-bloom" aria-hidden="true"></div>
+          <button class="seal-hit" type="button" aria-label="Tap the wax seal to open the invitation"></button>
+          <p class="seal-hint">Tap the seal to open</p>
+        </div></div></div></div>
+      </section>
+
+      <!-- Scene 2 · Bow -->
+      <section class="scene" id="s-bow" aria-label="Lace bow">
+        <div class="scene-bg" style="background-image: url(/images/02-bow-bg.webp)"></div>
+        <div class="stage"><div class="art"><div class="intro"><div class="kb">
+          <picture class="plate">
+            <source srcset="/images/02-bow.webp" type="image/webp" />
+            <img src="/images/02-bow.jpg" width="1080" height="1920" alt="Ivory lace curtains gathered with a large lace bow above garden steps lit by lanterns" decoding="async" draggable="false" />
+          </picture>
+          <svg class="ribbon" viewBox="0 0 1080 1920" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <div class="untie" aria-hidden="true"></div>
+          <div class="glows" aria-hidden="true"></div>
+          <div class="fx" aria-hidden="true"></div>
+        </div></div></div></div>
+      </section>
+    </div>
+
+    <!-- The invitation pages: real, scrolling pages -->
+    <main id="pages" aria-label="Nikah invitation of Zainab and Mohammed">
+      <!-- Scene 3 · Date reveal -->
+      <section class="page" id="s-date">
+        <div class="scene-bg" style="background-image: url(/images/03-date-bg.webp)"></div>
+        <div class="stage"><div class="art"><div class="intro"><div class="kb">
+          <picture class="plate">
+            <source srcset="/images/03-date.webp" type="image/webp" />
+            <img src="/images/03-date.jpg" width="1080" height="1920" alt="Tap to reveal the date: 14 November 2026, In shaa Allah" decoding="async" draggable="false" />
+          </picture>
+          <div class="rays" aria-hidden="true"></div>
+          <div class="date-bloom" aria-hidden="true"></div>
+          <div class="veil veil-date" aria-hidden="true"><div class="veil-shimmer"></div><div class="veil-sparkles"></div></div>
+          <div class="veil veil-ar" aria-hidden="true"><div class="veil-shimmer"></div></div>
+          <div class="date-glint" aria-hidden="true"></div>
+          <button class="date-tap" type="button" aria-label="Reveal the date"><span class="tap-dot"></span></button>
+        </div></div></div></div>
+      </section>
+
+      <!-- Scene 4 · Countdown -->
+      <section class="page" id="s-countdown">
+        <div class="scene-bg" style="background-image: url(/images/04-countdown-bg.webp)"></div>
+        <div class="stage"><div class="art"><div class="intro"><div class="kb">
+          <picture class="plate">
+            <source srcset="/images/04-countdown.webp" type="image/webp" />
+            <img src="/images/04-countdown.jpg" width="1080" height="1920" alt="Countdown until the big day, 14 November 2026 at 4:00 PM" decoding="async" draggable="false" />
+          </picture>
+          <div class="rays" aria-hidden="true"></div>
+          <div class="countdown" role="timer" aria-live="off"></div>
+        </div></div></div></div>
+      </section>
+
+      <!-- Scene 5 · Nikah -->
+      <section class="page" id="s-nikah">
+        <div class="scene-bg" style="background-image: url(/images/05-nikah-bg.webp)"></div>
+        <div class="stage"><div class="art"><div class="intro"><div class="kb">
+          <picture class="plate">
+            <source srcset="/images/05-nikah.webp" type="image/webp" />
+            <img src="/images/05-nikah.jpg" width="1080" height="1920" alt="Nikah — after Namaz-e-Asar, 4:00 PM, at Jama Masjid, Nallasopara West" decoding="async" draggable="false" />
+          </picture>
+          <div class="sheen" style="--l: 12%; --t: 42.5%; --w: 79%; --h: 15%" aria-hidden="true"><span></span></div>
+          <div class="twinkles" aria-hidden="true"></div>
+          <a class="map-btn" target="_blank" rel="noopener" aria-label="View location of Jama Masjid, Nallasopara West on Google Maps">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z" /><circle cx="12" cy="10" r="2.6" /></svg>
+            <span>View Location</span>
+          </a>
+        </div></div></div></div>
+      </section>
+
+      <!-- Scene 6 · Dinner -->
+      <section class="page" id="s-dinner">
+        <div class="scene-bg" style="background-image: url(/images/06-dinner-bg.webp)"></div>
+        <div class="stage"><div class="art"><div class="intro"><div class="kb">
+          <picture class="plate">
+            <source srcset="/images/06-dinner.webp" type="image/webp" />
+            <img src="/images/06-dinner.jpg" width="1080" height="1920" alt="Followed by Dinner, 9:00 PM onwards, at our residence" decoding="async" draggable="false" />
+          </picture>
+          <div class="sheen" style="--l: 30%; --t: 7%; --w: 68%; --h: 13.5%" aria-hidden="true"><span></span></div>
+          <div class="twinkles" aria-hidden="true"></div>
+        </div></div></div></div>
+      </section>
+
+      <!-- Scene 7 · Couple -->
+      <section class="page" id="s-couple">
+        <div class="scene-bg" style="background-image: url(/images/07-couple-bg.webp)"></div>
+        <div class="stage"><div class="art"><div class="intro"><div class="kb">
+          <picture class="plate">
+            <source srcset="/images/07-couple.webp" type="image/webp" />
+            <img src="/images/07-couple.jpg" width="1080" height="1920" alt="We cannot wait to celebrate this beautiful occasion with your presence, love, and blessings. Memon's &amp; Chunawala's — Zainab &amp; Mohammed — 14 November 2026" decoding="async" draggable="false" />
+          </picture>
+          <div class="rays" aria-hidden="true"></div>
+          <div class="glows" aria-hidden="true"></div>
+          <div class="twinkles" aria-hidden="true"></div>
+          <div class="sheen sheen-names" style="--l: 23%; --t: 57.4%; --w: 70%; --h: 7.8%" aria-hidden="true"><span></span></div>
+          <button class="replay" type="button" aria-label="Watch the invitation again"><span aria-hidden="true">↺</span> Watch again</button>
+        </div></div></div></div>
+      </section>
+    </main>
+
+    <canvas id="petals" aria-hidden="true"></canvas>
+
+    <button id="music" type="button" aria-label="Mute music" aria-pressed="false" hidden>
+      <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    </button>
+
+    <div id="scroll-hint" aria-hidden="true">
+      <span>Scroll</span>
+      <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>
+    </div>
+
+    <div id="curtain" aria-hidden="true"></div>
+
+    <noscript>
+      <p style="padding:2rem;font-family:Georgia,serif;text-align:center">
+        Zainab &amp; Mohammed · Nikah · Saturday 14 November 2026, 4:00 PM (after Namaz-e-Asar) at Jama Masjid, Nallasopara West.
+        Followed by dinner, 9:00 PM onwards, at our residence.
+      </p>
+    </noscript>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,168 @@
+:root {
+  --ivory: #f8f1e4;
+  --cream: #efe3cc;
+  --champagne: #c9a96e;
+  --sage: #9aa07a;
+  --olive: #6e6245;
+  --brown: #7b5b3b;
+  --gold-line: rgba(201, 169, 110, 0.75);
+
+  --serif: 'Cormorant Garamond', 'Cormorant', Georgia, 'Times New Roman', serif;
+  --caps: 'Cinzel', 'Cormorant Garamond', Georgia, serif;
+  --script: 'Pinyon Script', 'Cormorant Garamond', cursive;
+
+  /* Page height. svh never changes when mobile browser bars show/hide,
+     so pages and artwork never jump while scrolling. */
+  --view-h: 100vh;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+}
+@supports (height: 100svh) {
+  :root { --view-h: 100svh; }
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  background: var(--ivory);
+  -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar { display: none; }
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--ivory);
+  color: var(--olive);
+  font-family: var(--serif);
+  overflow-x: hidden;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  /* No double-tap zoom / long-press save — scrolling still works */
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+body.is-locked { overflow: hidden; height: 100%; }
+
+img { display: block; max-width: 100%; -webkit-user-drag: none; pointer-events: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+a { color: inherit; }
+
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--champagne);
+  outline-offset: 4px;
+  border-radius: 999px;
+}
+
+/* ─── Opening overlays (seal, bow) ─────────────────────────────── */
+
+#intro {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+.scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  contain: strict;
+}
+#s-seal { z-index: 2; }
+#s-bow { z-index: 1; }
+
+/* ─── Scrolling pages ──────────────────────────────────────────── */
+
+#pages { position: relative; z-index: 1; }
+.page {
+  position: relative;
+  height: var(--view-h);
+  overflow: hidden;
+  contain: paint;
+}
+/* Soft seam between pages: each page's blurred backdrop fades to ivory at
+   its top and bottom, so one painting flows into the next */
+.page .scene-bg {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 4%, #000 16%, #000 84%, transparent 96%);
+  mask-image: linear-gradient(to bottom, transparent 4%, #000 16%, #000 84%, transparent 96%);
+}
+
+/* Letterbox fill: blurred, brightened copy of the artwork */
+.scene-bg {
+  position: absolute;
+  inset: -8%;
+  background-size: cover;
+  background-position: center;
+  filter: blur(14px);
+  transform: translateZ(0);
+}
+.scene-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(248, 241, 228, 0.16);
+}
+
+/* Stage: locked to the 9:16 artwork, contained in the viewport. All overlays
+   are positioned in % of the stage and sized in cqw/cqh. */
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(100vw, calc(var(--view-h) * 9 / 16));
+  aspect-ratio: 9 / 16;
+  transform: translate(-50%, -50%);
+  container-type: size;
+}
+.art,
+.intro,
+.kb {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 50%;
+}
+.plate,
+.plate img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.plate img { object-fit: cover; }
+
+/* Soft edge so the artwork melts into the blurred fill */
+.stage::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  box-shadow: 0 0 2.5cqw 1.2cqw rgba(248, 241, 228, 0.18);
+}
+
+#petals {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 60;
+  pointer-events: none;
+}
+
+/* Fade-to-ivory used by "Watch again" */
+#curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--ivory);
+  opacity: 0;
+  pointer-events: none;
+}

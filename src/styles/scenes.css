@@ -1,0 +1,460 @@
+/* Coordinates are % of the artwork (1080×1920); sizes are cqw/cqh of the stage. */
+
+/* ─── Scene 1 · Seal ───────────────────────────────────────────── */
+
+#s-seal {
+  --sx: 52.4%;
+  --sy: 51.9%;
+  --sd: 23.2cqw;
+}
+.seal-ring,
+.seal-hit,
+.seal-bloom {
+  position: absolute;
+  left: var(--sx);
+  top: var(--sy);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  translate: -50% -50%;
+}
+.seal-ring {
+  width: calc(var(--sd) * 1.12);
+  border: 0.35cqw solid rgba(214, 186, 128, 0.55);
+  box-shadow:
+    0 0 3cqw 1cqw rgba(226, 196, 132, 0.45),
+    inset 0 0 2cqw rgba(255, 236, 196, 0.5);
+  animation: ring-pulse 2.6s ease-in-out infinite;
+}
+@keyframes ring-pulse {
+  0%, 100% { transform: scale(0.96); opacity: 0.55; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+.seal-hit {
+  width: calc(var(--sd) * 1.6);
+  z-index: 5;
+  pointer-events: auto;
+}
+.seal-hit:focus-visible { outline-offset: -2cqw; }
+
+.seal-hint {
+  position: absolute;
+  left: 50%;
+  top: 88%;
+  margin: 0;
+  translate: -50% -50%;
+  white-space: nowrap;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 5.6cqw;
+  letter-spacing: 0.02em;
+  color: var(--olive);
+  text-shadow: 0 0 2cqw rgba(248, 241, 228, 0.95), 0 0 0.6cqw rgba(248, 241, 228, 0.9);
+  animation: breathe 3.2s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { opacity: 0.55; transform: scale(0.985); }
+  50% { opacity: 1; transform: scale(1.015); }
+}
+
+/* 3D unfolding envelope (pieces are built on tap) */
+.wedges {
+  position: absolute;
+  inset: 0;
+  display: none;
+  z-index: 2;
+}
+.persp {
+  position: absolute;
+  inset: 0;
+  perspective: 260cqw;
+  perspective-origin: var(--sx) var(--sy);
+}
+.flap {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+.petals-outer,
+.env-inner,
+.face {
+  position: absolute;
+  inset: 0;
+}
+.petals-outer img,
+.env-inner img,
+.face img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+/* Underside of a petal: same paper texture, a little softer and warmer */
+.face.back img { filter: brightness(1.02) sepia(0.12) blur(0.6px); }
+.face.back::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(70% 60% at 50% 50%, rgba(255, 250, 240, 0.35), rgba(214, 196, 160, 0.3));
+}
+.back-x { transform: rotateY(180deg); }
+.back-y { transform: rotateX(180deg); }
+.seal-piece { transform: translateZ(1px); }
+.seal-hole {
+  -webkit-mask-image: radial-gradient(circle at var(--sx) var(--sy), transparent 11.4cqw, #000 11.9cqw);
+  mask-image: radial-gradient(circle at var(--sx) var(--sy), transparent 11.4cqw, #000 11.9cqw);
+}
+.seal-bloom {
+  width: 40cqw;
+  opacity: 0;
+  z-index: 1;
+  background: radial-gradient(circle, rgba(255, 252, 240, 1) 0%, rgba(255, 236, 200, 0.85) 30%, rgba(248, 226, 180, 0.35) 55%, transparent 72%);
+}
+
+/* ─── Scene 2 · Bow ────────────────────────────────────────────── */
+
+.ribbon {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: 0;
+}
+.untie {
+  position: absolute;
+  inset: 0;
+  display: none;
+  perspective: 110cqw;
+}
+.untie .half { position: absolute; inset: 0; }
+.untie .half img { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.glows {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+.glow {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--s);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(255, 214, 140, 0.95) 0%, rgba(255, 190, 110, 0.45) 30%, rgba(255, 170, 90, 0) 68%);
+}
+.fx,
+.twinkles { position: absolute; inset: 0; pointer-events: none; }
+
+/* Sparkle star (shared) */
+.spark {
+  position: absolute;
+  width: var(--sz, 3cqw);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  background: radial-gradient(circle, #fffdf5 0 12%, rgba(255, 233, 180, 0.9) 22%, transparent 60%);
+  clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%);
+  pointer-events: none;
+}
+.twinkles .spark { opacity: 0; }
+
+/* Drifting sunbeams over the sunlit paintings */
+.rays {
+  position: absolute;
+  inset: -10%;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  opacity: 0.55;
+  background: repeating-linear-gradient(112deg, rgba(255, 238, 200, 0) 0 6cqw, rgba(255, 238, 200, 0.75) 9cqw, rgba(255, 238, 200, 0) 13cqw 22cqw);
+  -webkit-mask-image: radial-gradient(70% 60% at 70% 20%, #000, transparent 75%);
+  mask-image: radial-gradient(70% 60% at 70% 20%, #000, transparent 75%);
+  animation: rays 14s ease-in-out infinite alternate;
+}
+@keyframes rays {
+  from { transform: translateX(-4cqw); opacity: 0.35; }
+  to { transform: translateX(5cqw); opacity: 0.7; }
+}
+
+/* Gold sheen that sweeps across printed headings */
+.sheen {
+  position: absolute;
+  left: var(--l);
+  top: var(--t);
+  width: var(--w);
+  height: var(--h);
+  overflow: hidden;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent), linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent), linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+  mask-composite: intersect;
+}
+.sheen span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 60%;
+  background: linear-gradient(100deg, transparent 0%, rgba(255, 235, 180, 0) 20%, rgba(255, 226, 150, 1) 45%, rgba(255, 250, 225, 1) 50%, rgba(255, 226, 150, 1) 55%, rgba(255, 235, 180, 0) 80%, transparent 100%);
+  transform: translateX(-110%);
+}
+
+/* ─── Scene 3 · Date ───────────────────────────────────────────── */
+
+.veil {
+  --wipe: -16;
+  position: absolute;
+  -webkit-backdrop-filter: blur(9px) saturate(1.05);
+  backdrop-filter: blur(9px) saturate(1.05);
+  background:
+    radial-gradient(45% 55% at 50% 50%, rgba(232, 206, 150, 0.35), transparent 75%),
+    radial-gradient(60% 80% at 50% 50%, rgba(250, 244, 232, 0.93), rgba(240, 226, 198, 0.88)),
+    linear-gradient(110deg, rgba(248, 241, 228, 0.9), rgba(233, 214, 176, 0.9));
+  -webkit-mask-image:
+    linear-gradient(to right, transparent calc(var(--wipe) * 1%), #000 calc(var(--wipe) * 1% + 16%)),
+    linear-gradient(to right, transparent 0, #000 16%, #000 84%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 22%, #000 78%, transparent 100%);
+  -webkit-mask-composite: source-in, source-in;
+  mask-image:
+    linear-gradient(to right, transparent calc(var(--wipe) * 1%), #000 calc(var(--wipe) * 1% + 16%)),
+    linear-gradient(to right, transparent 0, #000 16%, #000 84%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 22%, #000 78%, transparent 100%);
+  mask-composite: intersect;
+  overflow: hidden;
+}
+.veil-date { left: 12%; top: 43.5%; width: 88%; height: 14%; }
+.veil-ar { left: 36%; top: 53.6%; width: 36%; height: 11%; }
+.veil-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 246, 220, 0) 38%, rgba(255, 238, 196, 0.85) 50%, rgba(255, 246, 220, 0) 62%, transparent 70%);
+  transform: translateX(-100%);
+  animation: shimmer 4.2s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+}
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  60%, 100% { transform: translateX(100%); }
+}
+.veil-sparkles { position: absolute; inset: 0; }
+.veil-sparkles .spark { --sz: 2.4cqw; opacity: 0; }
+
+/* Gold glint riding the edge of the wipe */
+.date-glint {
+  position: absolute;
+  top: 45%;
+  height: 11%;
+  left: 12%;
+  width: 3.4cqw;
+  translate: -50% 0;
+  opacity: 0;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(255, 246, 214, 1), rgba(255, 214, 140, 0.75) 40%, rgba(255, 200, 120, 0) 100%);
+  filter: blur(0.4cqw);
+}
+
+.date-tap {
+  position: absolute;
+  left: 56%;
+  top: 51%;
+  width: 16cqw;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+}
+.tap-dot {
+  position: relative;
+  width: 5.5cqw;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 250, 238, 1) 0 30%, rgba(201, 169, 110, 0.9) 34% 44%, rgba(201, 169, 110, 0) 48%);
+  box-shadow: 0 0 2cqw rgba(201, 169, 110, 0.6);
+}
+.tap-dot::before,
+.tap-dot::after {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  border-radius: 50%;
+  border: 0.4cqw solid rgba(201, 169, 110, 0.8);
+  animation: tap-ring 2s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+}
+.tap-dot::after { animation-delay: 1s; }
+@keyframes tap-ring {
+  0% { transform: scale(0.4); opacity: 0.9; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.date-bloom {
+  position: absolute;
+  left: 56%;
+  top: 53%;
+  width: 90cqw;
+  height: 26cqh;
+  translate: -50% -50%;
+  opacity: 0;
+  mix-blend-mode: screen;
+  background: radial-gradient(closest-side, rgba(255, 228, 170, 0.8), rgba(255, 220, 160, 0.25) 55%, transparent);
+}
+
+/* ─── Scene 4 · Countdown ──────────────────────────────────────── */
+
+.countdown {
+  position: absolute;
+  left: 24%;
+  width: 64%;
+  top: 47.2%;
+  translate: 0 -50%;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  color: var(--olive);
+}
+.cd-unit {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.cd-unit + .cd-unit::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12%;
+  bottom: 8%;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--gold-line) 25%, var(--gold-line) 75%, transparent);
+}
+.cd-num {
+  position: relative;
+  height: 1.05em;
+  overflow: hidden;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 10.5cqw;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: 'tnum' 1, 'lnum' 1;
+  letter-spacing: 0.01em;
+}
+.cd-num .d {
+  display: inline-block;
+  position: relative;
+  width: 0.52em;
+  text-align: center;
+}
+.cd-num .d b {
+  display: block;
+  font-weight: inherit;
+}
+.cd-num .d b.next {
+  position: absolute;
+  inset: 0;
+}
+.cd-label {
+  margin-top: 1.4cqw;
+  font-family: var(--caps);
+  font-size: 2.15cqw;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  padding-left: 0.22em;
+  text-transform: uppercase;
+  color: var(--olive);
+  opacity: 0.85;
+}
+.cd-done {
+  width: 100%;
+  text-align: center;
+  font-family: var(--script);
+  font-size: 9cqw;
+  line-height: 1.25;
+  color: var(--olive);
+}
+
+/* ─── Scene 5 · Nikah ──────────────────────────────────────────── */
+
+.map-btn {
+  position: absolute;
+  left: 50%;
+  top: 81%;
+  translate: -50% -50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 2cqw;
+  padding: 2.5cqw 5.4cqw 2.5cqw 4.4cqw;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 169, 110, 0.9);
+  background: rgba(250, 244, 232, 0.62);
+  box-shadow: 0 0.8cqw 3cqw rgba(123, 91, 59, 0.12), inset 0 0 0 0.5cqw rgba(255, 255, 255, 0.25);
+  color: var(--olive);
+  font-family: var(--caps);
+  font-weight: 500;
+  font-size: 3.1cqw;
+  letter-spacing: 0.2em;
+  text-decoration: none;
+  white-space: nowrap;
+  text-transform: uppercase;
+  transition: background 0.3s, box-shadow 0.3s;
+  overflow: hidden;
+}
+/* soft glint passing over the button */
+.map-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 248, 230, 0.9) 50%, transparent 65%);
+  transform: translateX(-120%);
+  animation: btn-glint 5s ease-in-out 2s infinite;
+}
+@keyframes btn-glint {
+  0%, 70% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+.map-btn:hover { background: rgba(250, 244, 232, 0.85); }
+.map-btn:active { transform: scale(0.97); }
+.map-btn svg {
+  position: relative;
+  width: 3.9cqw;
+  height: 3.9cqw;
+  fill: none;
+  stroke: var(--champagne);
+  stroke-width: 1.8;
+}
+.map-btn span { position: relative; }
+
+/* ─── Scene 7 · Couple ─────────────────────────────────────────── */
+
+.replay {
+  position: absolute;
+  left: 50%;
+  top: 95.2%;
+  translate: -50% -50%;
+  padding: 1.6cqw 3.6cqw;
+  font-family: var(--caps);
+  font-size: 2.7cqw;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--olive);
+  white-space: nowrap;
+  opacity: 0;
+  text-shadow: 0 0 1.5cqw rgba(248, 241, 228, 1), 0 0 0.5cqw rgba(248, 241, 228, 1);
+}
+.replay span { font-family: var(--serif); font-size: 1.3em; letter-spacing: 0; margin-right: 0.3em; }
+
+/* ─── Interactivity / touch ───────────────────────────────────── */
+
+.seal-hit,
+.date-tap,
+.map-btn,
+.replay { -webkit-touch-callout: none; touch-action: manipulation; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rays,
+  .map-btn::after { animation: none; }
+}
