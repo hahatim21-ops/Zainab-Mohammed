@@ -96,6 +96,11 @@
           <div class="sheen" style="--l: 22%; --t: 37.5%; --w: 56%; --h: 9.5%" aria-hidden="true"><span></span></div>
           <div class="sheen" style="--l: 16%; --t: 54%; --w: 68%; --h: 13%" aria-hidden="true"><span></span></div>
           <div class="twinkles" aria-hidden="true"></div>
+          <button class="scroll-cta" type="button" aria-label="Scroll down to view the invitation">
+            <span class="scroll-cta-text">Scroll down</span>
+            <span class="scroll-cta-sub">to view the invitation</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8l6 6 6-6" /><path d="M6 13l6 6 6-6" /></svg>
+          </button>
         </div></div></div></div>
       </section>
 
@@ -104,7 +109,7 @@
         <div class="stage"><div class="art"><div class="intro"><div class="kb">
           <picture class="plate">
             <source srcset="/images/03-date.webp" type="image/webp" />
-            <img src="/images/03-date.jpg" width="1080" height="1920" alt="Tap to reveal the date: 14 November 2026, In shaa Allah" decoding="async" draggable="false" />
+            <img src="/images/03-date.jpg" width="1080" height="1920" alt="Tap to reveal the date: 14 November 2026, In shaa Allah — with a countdown until the big day" decoding="async" draggable="false" />
           </picture>
           <div class="rays" aria-hidden="true"></div>
           <div class="date-bloom" aria-hidden="true"></div>
@@ -112,23 +117,16 @@
           <div class="veil veil-ar" aria-hidden="true"><div class="veil-shimmer"></div></div>
           <div class="date-glint" aria-hidden="true"></div>
           <button class="date-tap" type="button" aria-label="Reveal the date"><span class="tap-dot"></span></button>
-        </div></div></div></div>
-      </section>
-
-      <!-- Scene 4 · Countdown -->
-      <section class="page" id="s-countdown">
-        <div class="stage"><div class="art"><div class="intro"><div class="kb">
-          <picture class="plate">
-            <source srcset="/images/04-countdown.webp" type="image/webp" />
-            <img src="/images/04-countdown.jpg" width="1080" height="1920" alt="Countdown until the big day, 14 November 2026 at 4:00 PM" decoding="async" draggable="false" />
-          </picture>
-          <div class="rays" aria-hidden="true"></div>
-          <div class="countdown" role="timer" aria-live="off"></div>
+          <div class="countdown-block">
+            <p class="cd-title">Countdown</p>
+            <div class="countdown" role="timer" aria-live="off"></div>
+            <p class="cd-sub">until the big day!</p>
+          </div>
         </div></div></div></div>
       </section>
 
       <!-- Scene 5 · Nikah -->
-      <section class="page" id="s-nikah">
+      <section class="page page-trim" id="s-nikah">
         <div class="stage"><div class="art"><div class="intro"><div class="kb">
           <picture class="plate">
             <source srcset="/images/05-nikah.webp" type="image/webp" />

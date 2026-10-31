@@ -126,6 +126,9 @@ a { color: inherit; }
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 8%);
   mask-image: linear-gradient(to bottom, transparent 0, #000 8%);
 }
+/* A page whose painting ends in plain paper: show only its top 80% and let
+   the next page melt over the rest. */
+.page.page-trim { aspect-ratio: 9 / 12.8; }
 .page .stage {
   left: 0;
   top: 0;

@@ -3,8 +3,8 @@
 A mobile-first, single-page invitation that plays like a short film:
 wax seal lifts → the flower opens softly onto the bow → the real lace bow pulls
 tight, holds a moment, then opens by itself → then one continuous scrolling page:
-names card → date (tap to reveal, golden wipe + confetti) → countdown → Nikah →
-Dinner (with the location button) → the couple.
+names card (with a "Scroll down" box) → date & countdown (tap to reveal, golden
+wipe + confetti) → Nikah → Dinner (with the location button) → the couple.
 
 Built with Vite (vanilla JS), GSAP + ScrollTrigger, Lenis and canvas-confetti.
 

@@ -47,7 +47,8 @@ export function createScroll({ reduced }) {
     clearTimeout(idleTimer);
     if (!hintEnabled) return;
     idleTimer = setTimeout(() => {
-      if (hintEnabled && !atEnd() && !locked) showHint(true);
+      // (not on the names card, which has its own "Scroll down" box)
+      if (hintEnabled && !atEnd() && !locked && window.scrollY > window.innerHeight * 0.6) showHint(true);
     }, 3200);
   };
   lenis.on('scroll', () => {
@@ -67,9 +68,9 @@ export function createScroll({ reduced }) {
       ScrollTrigger.refresh();
     },
     /** Show the hint now and again whenever the guest pauses mid-way. */
-    hint(on = true) {
+    hint(on = true, now = true) {
       hintEnabled = on;
-      showHint(on);
+      showHint(on && now);
       if (on) scheduleHint();
     },
     toTop() {

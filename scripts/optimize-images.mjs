@@ -26,7 +26,7 @@ const W = 1080;
 const H = 1920;
 
 // Match files by their numeric prefix so the descriptive filenames can stay as delivered.
-const SCENES = ['01-seal', '02-bow', '02b-names', '03-date', '04-countdown', '05-nikah', '06-dinner', '07-couple'];
+const SCENES = ['01-seal', '02-bow', '02b-names', '03-date', '05-nikah', '06-dinner', '07-couple'];
 const files = fs.readdirSync(assets);
 const findAsset = (prefix) => files.find((f) => f.startsWith(prefix.slice(0, 3)) && /\.(png|jpe?g|webp)$/i.test(f));
 

@@ -34,7 +34,6 @@ const scenes = {
   bow: $('#s-bow'),
   names: $('#s-names'),
   date: $('#s-date'),
-  countdown: $('#s-countdown'),
   nikah: $('#s-nikah'),
   dinner: $('#s-dinner'),
   couple: $('#s-couple'),
@@ -63,7 +62,7 @@ async function start() {
 
   const bow = initBow(scenes.bow, { reduced });
   const date = initDate(scenes.date, { reduced });
-  const countdown = initCountdown(scenes.countdown, { target: EVENT_DATETIME, reduced });
+  const countdown = initCountdown(scenes.date, { target: EVENT_DATETIME, reduced });
   initNikah(scenes.nikah);
   const dinner = initDinner(scenes.dinner, { mapUrl: MAP_URL });
   const couple = initCouple(scenes.couple, { reduced, onReplay: replay });
@@ -77,7 +76,7 @@ async function start() {
   }
 
   initPages({
-    pages: [scenes.names, scenes.date, scenes.countdown, scenes.nikah, scenes.dinner, scenes.couple],
+    pages: [scenes.names, scenes.date, scenes.nikah, scenes.dinner, scenes.couple],
     reduced,
     countdownItems: countdown.items,
     mapBtn: dinner.button,
@@ -106,15 +105,20 @@ async function start() {
   //    the names card — no tap needed ──
   await bow.tie();
   petals.setCount(14);
-  await wait(reduced ? 0.6 : 0.9);
+  await wait(reduced ? 0.4 : 0.35);
   const namesIntro = scenes.names.querySelector('.intro');
-  if (!reduced) gsap.fromTo(namesIntro, { scale: 1.1 }, { scale: 1, duration: 2.4, ease: 'power2.out' });
+  if (!reduced) gsap.fromTo(namesIntro, { scale: 1.1 }, { scale: 1, duration: 1.9, ease: 'power2.out' });
   await bow.untie();
   $('#intro').remove();
 
   // ── The pages: one continuous scroll ──
   scroll.unlock();
-  scroll.hint(true);
+  // A clear "Scroll down" box on the names card; the small hint at the
+  // bottom of the screen only returns if the guest pauses further down.
+  const cta = scenes.names.querySelector('.scroll-cta');
+  gsap.fromTo(cta, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.9, delay: 0.5, ease: 'power2.out' });
+  cta.addEventListener('click', () => scroll.lenis.scrollTo(scenes.date, { duration: 1.6 }));
+  scroll.hint(true, false);
 
   // A tap anywhere on the date page reveals the date.
   scenes.date.addEventListener('click', (e) => {

@@ -2,9 +2,10 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { twinkleField } from '../effects/sparkles.js';
 
-// The pages (names card → couple) form one continuous scrolling column.
-// As each painting comes up it softly lifts and brightens into place, and
-// its details (countdown, location button, "Watch again") rise in.
+// The pages (names card → date & countdown → Nikah → Dinner → couple) form
+// one continuous scrolling column. As each painting comes up it softly lifts
+// and brightens into place, and its details (countdown, location button,
+// "Watch again") rise in.
 
 const TWINKLE_ZONES = {
   's-names': { x0: 22, x1: 78, y0: 36, y1: 68 },
@@ -55,8 +56,8 @@ export function initPages({ pages, reduced, countdownItems, mapBtn, replayBtn, o
       { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power2.out', ...vars, scrollTrigger: { trigger, start, toggleActions: 'play none none reverse' } }
     );
 
-  // Countdown units rise one after another.
-  reveal(countdownItems, byId['s-countdown'], 'top 45%', { stagger: 0.12 });
+  // Countdown units rise one after another, under the date.
+  reveal(countdownItems, byId['s-date'], 'top 35%', { stagger: 0.12 });
   // The dinner location button fades up once the details have settled.
   reveal(mapBtn, byId['s-dinner'], 'top 35%', { delay: 0.2 });
   // Finale: candles light, then "Watch again".

@@ -68,29 +68,27 @@ export function initBow(scene, { reduced }) {
   /** The loose bow pulls tight and settles. */
   function tie() {
     const tl = gsap.timeline();
-    tl.to(intro, { scale: 1, duration: 1.4, ease: 'power2.inOut' }, 0)
-      .to(kb, { filter: 'blur(0px) brightness(1)', duration: 0.5, ease: 'power1.out' }, 0);
+    tl.to(intro, { scale: 1, duration: 1.0, ease: 'power2.inOut' }, 0)
+      .to(kb, { filter: 'blur(0px) brightness(1)', duration: 0.4, ease: 'power1.out' }, 0);
     if (reduced) return tl.add(() => glows.start(0.8), 0.8).then(() => gsap.set(kb, { clearProps: 'filter' }));
 
     tl
       // Slack first: everything sags a touch, as if the ribbon is being gathered
-      .to([parts.loopL, parts.loopR], { yPercent: '+=0.8', duration: 0.35, ease: 'sine.inOut' }, 0.1)
-      .to(parts.knot, { yPercent: '+=0.6', duration: 0.35, ease: 'sine.inOut' }, 0.1)
+      .to([parts.loopL, parts.loopR], { yPercent: '+=0.8', duration: 0.2, ease: 'sine.inOut' }, 0.05)
+      .to(parts.knot, { yPercent: '+=0.6', duration: 0.2, ease: 'sine.inOut' }, 0.05)
       // The tug: tails pull, loops lift into shape, the knot cinches
-      .to([parts.tailL, parts.tailR], { rotation: 0, yPercent: 0, scaleY: 1, duration: 0.8, ease: 'power3.out' }, 0.45)
-      .to([parts.loopL, parts.loopR], { rotation: 0, yPercent: 0, scaleX: 1, scaleY: 1, duration: 1.0, ease: 'back.out(1.7)' }, 0.5)
-      .to(parts.knot, { yPercent: 0, scaleX: 0.9, scaleY: 1.06, duration: 0.3, ease: 'power3.out' }, 0.5)
-      .to(parts.knot, { scaleX: 1, scaleY: 1, scale: 1, duration: 0.8, ease: 'elastic.out(1, 0.45)' }, 0.8)
+      .to([parts.tailL, parts.tailR], { rotation: 0, yPercent: 0, scaleY: 1, duration: 0.6, ease: 'power3.out' }, 0.25)
+      .to([parts.loopL, parts.loopR], { rotation: 0, yPercent: 0, scaleX: 1, scaleY: 1, duration: 0.75, ease: 'back.out(1.7)' }, 0.28)
+      .to(parts.knot, { yPercent: 0, scaleX: 0.9, scaleY: 1.06, duration: 0.25, ease: 'power3.out' }, 0.28)
+      .to(parts.knot, { scaleX: 1, scaleY: 1, scale: 1, duration: 0.6, ease: 'elastic.out(1, 0.45)' }, 0.53)
       .add(() => {
         sparkleBurst(fx, KNOT.x, KNOT.y, 16);
         try {
           navigator.vibrate?.(15);
         } catch {}
-      }, 0.6)
-      .add(() => glows.start(1.2), 0.7)
-      // The tails sway once as the bow settles
-      .to(parts.tailL, { rotation: -1.2, duration: 0.45, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 1.2)
-      .to(parts.tailR, { rotation: 1.2, duration: 0.45, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 1.25);
+      }, 0.35)
+      .add(() => glows.start(0.8), 0.4)
+      .to({}, { duration: 0.01 }, 1.1);
 
     return tl.then(() => gsap.set(kb, { clearProps: 'filter' }));
   }
@@ -103,13 +101,13 @@ export function initBow(scene, { reduced }) {
     const tl = gsap.timeline();
 
     // The knot loosens; the loops slip outward and the tails sag
-    tl.to(parts.knot, { scale: 1.15, opacity: 0, duration: 0.7, ease: 'power2.in' }, 0)
+    tl.to(parts.knot, { scale: 1.15, opacity: 0, duration: 0.5, ease: 'power2.in' }, 0)
       .add(() => sparkleBurst(fx, KNOT.x, KNOT.y, 10), 0.1)
-      .to(parts.loopL, { x: -3 * cqw, rotation: -10, yPercent: 1.4, duration: 0.8, ease: 'power2.inOut' }, 0.1)
-      .to(parts.loopR, { x: 3 * cqw, rotation: 10, yPercent: 1.4, duration: 0.8, ease: 'power2.inOut' }, 0.12)
-      .to(parts.tailL, { rotation: 3, yPercent: 1.5, duration: 0.8, ease: 'power2.inOut' }, 0.15)
-      .to(parts.tailR, { rotation: -3, yPercent: 1.5, duration: 0.8, ease: 'power2.inOut' }, 0.17)
-      .to(scene.querySelectorAll('.glows, .fx'), { opacity: 0, duration: 0.6 }, 0.4);
+      .to(parts.loopL, { x: -3 * cqw, rotation: -10, yPercent: 1.4, duration: 0.55, ease: 'power2.inOut' }, 0.05)
+      .to(parts.loopR, { x: 3 * cqw, rotation: 10, yPercent: 1.4, duration: 0.55, ease: 'power2.inOut' }, 0.07)
+      .to(parts.tailL, { rotation: 3, yPercent: 1.5, duration: 0.55, ease: 'power2.inOut' }, 0.08)
+      .to(parts.tailR, { rotation: -3, yPercent: 1.5, duration: 0.55, ease: 'power2.inOut' }, 0.1)
+      .to(scene.querySelectorAll('.glows, .fx'), { opacity: 0, duration: 0.5 }, 0.3);
 
     // Then each side of the bow swings away with its curtain, and the camera
     // moves through onto the date.
@@ -125,15 +123,15 @@ export function initBow(scene, { reduced }) {
       glows.stop();
       gsap
         .timeline()
-        .to(left, { x: -66 * cqw, rotationY: 34, transformOrigin: '0% 50%', duration: 1.8, ease: 'power3.inOut' }, 0)
-        .to(right, { x: 66 * cqw, rotationY: -34, transformOrigin: '100% 50%', duration: 1.8, ease: 'power3.inOut' }, 0)
-        .to([parts.loopL, parts.loopR], { yPercent: '+=5', duration: 1.6, ease: 'power2.in' }, 0)
-        .to([parts.tailL, parts.tailR], { yPercent: '+=3', duration: 1.6, ease: 'power2.in' }, 0)
-        .to([left, right], { opacity: 0, duration: 0.8, ease: 'power1.in' }, 1.0);
-    }, 0.75)
-      .to(intro, { scale: 1.1, duration: 2.0, ease: 'power2.inOut' }, 0.75)
-      .to(scene.querySelectorAll('.scene-bg, .bands'), { opacity: 0, duration: 1.2, ease: 'power1.inOut' }, 0.9)
-      .to({}, { duration: 0.01 }, 2.6);
+        .to(left, { x: -66 * cqw, rotationY: 34, transformOrigin: '0% 50%', duration: 1.4, ease: 'power3.inOut' }, 0)
+        .to(right, { x: 66 * cqw, rotationY: -34, transformOrigin: '100% 50%', duration: 1.4, ease: 'power3.inOut' }, 0)
+        .to([parts.loopL, parts.loopR], { yPercent: '+=5', duration: 1.3, ease: 'power2.in' }, 0)
+        .to([parts.tailL, parts.tailR], { yPercent: '+=3', duration: 1.3, ease: 'power2.in' }, 0)
+        .to([left, right], { opacity: 0, duration: 0.6, ease: 'power1.in' }, 0.8);
+    }, 0.45)
+      .to(intro, { scale: 1.1, duration: 1.5, ease: 'power2.inOut' }, 0.45)
+      .to(scene.querySelectorAll('.scene-bg, .bands'), { opacity: 0, duration: 1.0, ease: 'power1.inOut' }, 0.6)
+      .to({}, { duration: 0.01 }, 1.9);
 
     return tl.then(() => {
       scene.style.display = 'none';
