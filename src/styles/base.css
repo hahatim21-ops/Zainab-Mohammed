@@ -94,7 +94,7 @@ a { color: inherit; }
   inset: -6%;
   z-index: 0;
   background: url(/images/03-date-bg.webp) center / cover no-repeat;
-  filter: blur(18px);
+  /* the image is already blurred at build time — no live filter */
 }
 #backdrop::after {
   content: '';
@@ -142,7 +142,7 @@ a { color: inherit; }
   inset: -8%;
   background-size: cover;
   background-position: center;
-  filter: blur(14px);
+  /* the image is already blurred at build time — no live filter */
   transform: translateZ(0);
 }
 .scene-bg::after {

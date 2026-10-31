@@ -61,6 +61,21 @@ export function initSeal(scene, { reduced, onTap, reveal }) {
   const intro = scene.querySelector('.intro');
   const stage = scene.querySelector('.stage');
 
+  // Draw the opening shape now, while the guest is still looking at the seal,
+  // so the tap itself does no heavy work.
+  const rosetteUrl = reduced ? '' : rosette();
+
+  // The bow scene is wrapped so the opening can grow by transform alone (the
+  // wrapper scales up with its mask; the inner layer scales back down), which
+  // the GPU does without repainting anything.
+  const wrap = document.createElement('div');
+  wrap.className = 'reveal-wrap';
+  const inner = document.createElement('div');
+  inner.className = 'reveal-inner';
+  inner.append(...reveal.childNodes);
+  wrap.appendChild(inner);
+  reveal.appendChild(wrap);
+
   // Idle: slow breathing zoom.
   const origin = `${C.x}% ${C.y}%`;
   const idle = gsap.to(intro, { scale: 1.03, transformOrigin: origin, duration: 14, ease: 'sine.inOut', yoyo: true, repeat: -1 });
@@ -106,12 +121,35 @@ export function initSeal(scene, { reduced, onTap, reveal }) {
       const cx = r.left + (r.width * C.x) / 100;
       const cy = r.top + (r.height * C.y) / 100;
       const maxSize = Math.hypot(Math.max(cx, innerWidth - cx), Math.max(cy, innerHeight - cy)) * 2 * 1.9;
-      const hole = { s: 0 };
-      reveal.style.setProperty('--rosette', `url(${rosette()})`);
+      const hole = { s: 4 };
+      // The wrapper is a square the size of the full-grown rosette, centred
+      // on the seal (so it never clips its own mask); the inner layer is put
+      // back exactly over the screen.
+      const half = maxSize / 2;
+      Object.assign(wrap.style, {
+        inset: 'auto',
+        left: `${cx - half}px`,
+        top: `${cy - half}px`,
+        width: `${maxSize}px`,
+        height: `${maxSize}px`,
+        maskImage: `url(${rosetteUrl})`,
+        webkitMaskImage: `url(${rosetteUrl})`,
+        maskSize: '100% 100%',
+        webkitMaskSize: '100% 100%',
+        transformOrigin: '50% 50%',
+      });
+      Object.assign(inner.style, {
+        inset: 'auto',
+        left: `${half - cx}px`,
+        top: `${half - cy}px`,
+        width: `${innerWidth}px`,
+        height: `${innerHeight}px`,
+        transformOrigin: `${cx}px ${cy}px`,
+      });
       const setHole = () => {
-        const s = Math.max(2, hole.s);
-        reveal.style.setProperty('--hole-size', `${s}px`);
-        reveal.style.setProperty('--hole-pos', `${cx - s / 2}px ${cy - s / 2}px`);
+        const k = Math.max(0.004, hole.s / maxSize);
+        wrap.style.transform = `scale(${k})`;
+        inner.style.transform = `scale(${1 / k})`;
       };
       setHole();
       reveal.classList.add('is-revealing');
@@ -123,7 +161,6 @@ export function initSeal(scene, { reduced, onTap, reveal }) {
         // The seal is pressed, then lifts away whole
         .to(seal, { scale: '-=0.05', duration: 0.18, ease: 'power2.in' }, 0)
         .to(seal, { scale: '+=0.2', y: -r.width * 0.06, duration: 1.3, ease: 'power2.out' }, 0.18)
-        .fromTo(seal, { filter: 'drop-shadow(0 0 0 rgba(80,70,50,0))' }, { filter: 'drop-shadow(0 18px 18px rgba(80,70,50,.28))', duration: 0.8, ease: 'sine.out' }, 0.18)
         .to(seal, { opacity: 0, duration: 0.8, ease: 'power1.in' }, 0.95)
         // The flower opens from the centre
         // (first just wide enough to open the seal's spot as it lifts)
@@ -131,12 +168,13 @@ export function initSeal(scene, { reduced, onTap, reveal }) {
         .to(hole, { s: maxSize, duration: 2.1, ease: 'power2.in', onUpdate: setHole }, 0.57)
         // …while the outer petals drift outward and soften
         .to(intro, { scale: 1.22, duration: 2.4, ease: 'power1.in' }, 0.35)
-        .fromTo(plate, { filter: 'blur(0px) brightness(1)' }, { filter: 'blur(2px) brightness(1.04)', duration: 2.0, ease: 'power1.in' }, 0.5)
         .to(scene.querySelectorAll('.scene-bg, .bands'), { opacity: 0, duration: 1.4, ease: 'power1.in' }, 1.0);
 
       await tl;
       idle.kill();
       reveal.classList.remove('is-revealing', 'is-waiting');
+      wrap.removeAttribute('style');
+      inner.removeAttribute('style');
       scene.style.display = 'none';
       liftStage.remove();
     }

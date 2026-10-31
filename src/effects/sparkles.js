@@ -68,5 +68,7 @@ export function twinkleField(parent, { x0, x1, y0, y1 }, count = 10, size = 2.4)
   return {
     elements: els,
     stop: () => tweens.forEach((t) => t.kill()),
+    pause: () => tweens.forEach((t) => t.pause()),
+    play: () => tweens.forEach((t) => t.play()),
   };
 }

@@ -63,9 +63,8 @@ export function createScroll({ reduced }) {
       showHint(false);
     },
     unlock() {
+      // The page's size never changes when unlocking, so nothing to re-measure.
       locked = false;
-      lenis.resize();
-      ScrollTrigger.refresh();
     },
     /** Show the hint now and again whenever the guest pauses mid-way. */
     hint(on = true, now = true) {

@@ -67,13 +67,8 @@ async function start() {
   const dinner = initDinner(scenes.dinner, { mapUrl: MAP_URL });
   const couple = initCouple(scenes.couple, { reduced, onReplay: replay });
 
-  // Gentle Ken Burns on every painting (1 → 1.04).
-  if (!reduced) {
-    Object.values(scenes).forEach((s, i) => {
-      if (s === scenes.seal) return;
-      gsap.fromTo(s.querySelector('.kb'), { scale: 1 }, { scale: 1.04, duration: 16 + i, ease: 'sine.inOut', yoyo: true, repeat: -1 });
-    });
-  }
+  // Gentle Ken Burns on the bow (the pages get theirs while on screen).
+  if (!reduced) gsap.fromTo(scenes.bow.querySelector('.kb'), { scale: 1 }, { scale: 1.04, duration: 17, ease: 'sine.inOut', yoyo: true, repeat: -1 });
 
   initPages({
     pages: [scenes.names, scenes.date, scenes.nikah, scenes.dinner, scenes.couple],
@@ -109,7 +104,10 @@ async function start() {
   const namesIntro = scenes.names.querySelector('.intro');
   if (!reduced) gsap.fromTo(namesIntro, { scale: 1.1 }, { scale: 1, duration: 1.9, ease: 'power2.out' });
   await bow.untie();
-  $('#intro').remove();
+  // Hide the finished opening now; remove it once the browser is idle.
+  const introEl = $('#intro');
+  introEl.style.display = 'none';
+  (window.requestIdleCallback || setTimeout)(() => introEl.remove());
 
   // ── The pages: one continuous scroll ──
   scroll.unlock();

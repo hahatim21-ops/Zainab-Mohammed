@@ -45,8 +45,19 @@ export function initPages({ pages, reduced, countdownItems, mapBtn, replayBtn, o
       });
     });
 
-    const zone = TWINKLE_ZONES[page.id];
-    if (zone && !reduced) twinkleField(page.querySelector('.twinkles'), zone, 6, 2.2);
+    // Slow Ken Burns and twinkles run only while the page is on screen, so
+    // pages further down cost nothing.
+    if (!reduced) {
+      const zone = TWINKLE_ZONES[page.id];
+      const twinkles = zone ? twinkleField(page.querySelector('.twinkles'), zone, 6, 2.2) : null;
+      const kb = gsap.fromTo(page.querySelector('.kb'), { scale: 1 }, { scale: 1.04, duration: 16 + i, ease: 'sine.inOut', yoyo: true, repeat: -1, paused: true });
+      const run = (on) => {
+        on ? kb.play() : kb.pause();
+        if (twinkles) on ? twinkles.play() : twinkles.pause();
+      };
+      run(false);
+      ScrollTrigger.create({ trigger: page, start: 'top bottom', end: 'bottom top', onToggle: (self) => run(self.isActive) });
+    }
   });
 
   const reveal = (targets, trigger, start, vars = {}) =>

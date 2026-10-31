@@ -1,4 +1,5 @@
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { twinkleField } from '../effects/sparkles.js';
 import { fireCannons } from '../effects/confetti.js';
 
@@ -16,6 +17,13 @@ export function initDate(scene, { reduced }) {
   const sparkles = reduced ? null : twinkleField(scene.querySelector('.veil-sparkles'), { x0: 12, x1: 88, y0: 20, y1: 80 }, 10, 2.2);
 
   let revealed = false;
+
+  // Veil sparkles twinkle only while the date page is on screen.
+  if (sparkles) {
+    sparkles.pause();
+    ScrollTrigger.create({ trigger: scene, start: 'top bottom', end: 'bottom top', onToggle: (self) => !revealed && (self.isActive ? sparkles.play() : sparkles.pause()) });
+  }
+
 
   function reveal() {
     if (revealed) return Promise.resolve();
