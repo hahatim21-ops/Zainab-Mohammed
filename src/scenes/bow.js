@@ -3,6 +3,15 @@ import { createGlows } from '../effects/glows.js';
 import { sparkleBurst } from '../effects/sparkles.js';
 import { KNOT, PART_ORDER } from './bowGeometry.js';
 
+// Written out in full so the build can add a version to each URL.
+const BOW_PART_URLS = {
+  tailL: '/images/02-bow-tailL.webp',
+  tailR: '/images/02-bow-tailR.webp',
+  loopL: '/images/02-bow-loopL.webp',
+  loopR: '/images/02-bow-loopR.webp',
+  knot: '/images/02-bow-knot.webp',
+};
+
 // Scene 2: the lace bow is the real one from the photo, cut into its pieces
 // (tails, loops, knot) over a rebuilt background. It starts loose — loops
 // low and wide, tails slack — pulls up into place with a soft tug, holds,
@@ -52,7 +61,7 @@ export function initBow(scene, { reduced }) {
   for (const name of PART_ORDER) {
     const p = document.createElement('img');
     p.className = `part part-${name} preload`;
-    p.src = `/images/02-bow-${name}.webp`;
+    p.src = BOW_PART_URLS[name];
     p.alt = '';
     p.draggable = false;
     partsBox.appendChild(p);
