@@ -20,7 +20,7 @@ export const MUSIC_VOLUME = 0.6;
 
 // Fill these in once the Vercel URL exists — they become the absolute
 // og:url / og:image that WhatsApp uses for the link preview.
-export const SITE_URL = 'https://YOUR-SITE.vercel.app';
+export const SITE_URL = 'https://zainab-mohammed.vercel.app';
 export const OG_IMAGE_URL = `${SITE_URL}/og-image.jpg`;
 
 export const META = {

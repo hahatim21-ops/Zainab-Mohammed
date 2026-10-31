@@ -3,3 +3,6 @@ dist
 screenshots
 .vercel
 .DS_Store
+
+.vercel
+.env*
