@@ -6,7 +6,8 @@
 //   - a taller copy of each painting with soft mirrored bands above/below,
 //     so phones taller than 9:16 never show bars
 //   - the bow cut into soft-edged pieces + the background rebuilt behind it
-//   - copies assets/music.mp3 → public/audio/music.mp3
+//   - copies assets/music.mp3 → src/assets/audio/music.mp3 (bundled with a
+//     content hash, so phones never keep an old copy)
 // Run with: npm run optimize
 import sharp from 'sharp';
 import fs from 'node:fs';
@@ -17,7 +18,7 @@ import { BOW_PARTS, PART_ORDER } from '../src/scenes/bowGeometry.js';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const assets = path.join(root, 'assets');
 const outImg = path.join(root, 'public', 'images');
-const outAudio = path.join(root, 'public', 'audio');
+const outAudio = path.join(root, 'src', 'assets', 'audio');
 fs.mkdirSync(outImg, { recursive: true });
 fs.mkdirSync(outAudio, { recursive: true });
 
@@ -279,7 +280,7 @@ function pushPullFill(rgb, mask, w, h) {
   const mp3 = files.find((f) => /\.mp3$/i.test(f));
   if (mp3) {
     fs.copyFileSync(path.join(assets, mp3), path.join(outAudio, 'music.mp3'));
-    console.log(`✓ audio/music.mp3  ←  ${mp3}`);
+    console.log(`✓ src/assets/audio/music.mp3  ←  ${mp3}`);
   } else {
     console.warn('! no .mp3 found in /assets — add assets/music.mp3 and re-run');
   }
