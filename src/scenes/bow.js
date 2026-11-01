@@ -89,7 +89,7 @@ export function initBow(scene, { reduced }) {
   // (It is the original painting, bow included, laid above the pieces.)
   const soft = document.createElement('img');
   soft.className = 'plate-soft preload';
-  soft.src = '/images/02-bow.webp';
+  soft.src = '/images/02-bow-soft.webp'; // blurred at build time
   soft.alt = '';
   soft.setAttribute('aria-hidden', 'true');
   partsBox.after(soft);
@@ -111,27 +111,27 @@ export function initBow(scene, { reduced }) {
   /** The loose bow pulls tight and settles. */
   function tie() {
     const tl = gsap.timeline();
-    tl.to(intro, { scale: 1, duration: 1.0, ease: 'power2.inOut' }, 0)
-      .to(soft, { opacity: 0, duration: 0.55, ease: 'power1.out' }, 0.15);
+    tl.to(intro, { scale: 1, duration: 1.4, ease: 'power2.inOut' }, 0)
+      .to(soft, { opacity: 0, duration: 0.7, ease: 'power1.out' }, 0.2);
     if (reduced) return tl.add(() => glows.start(0.8), 0.8).then();
 
     tl
       // Slack first: everything sags a touch, as if the ribbon is being gathered
-      .to([parts.loopL, parts.loopR], { y: `+=${py(0.8)}`, duration: 0.2, ease: 'sine.inOut' }, 0.05)
-      .to(parts.knot, { y: `+=${py(0.6)}`, duration: 0.2, ease: 'sine.inOut' }, 0.05)
+      .to([parts.loopL, parts.loopR], { y: `+=${py(0.8)}`, duration: 0.3, ease: 'sine.inOut' }, 0.1)
+      .to(parts.knot, { y: `+=${py(0.6)}`, duration: 0.3, ease: 'sine.inOut' }, 0.1)
       // The tug: tails pull, loops lift into shape, the knot cinches
-      .to([parts.tailL, parts.tailR], { rotation: 0, y: 0, scaleY: 1, duration: 0.6, ease: 'power3.out' }, 0.25)
-      .to([parts.loopL, parts.loopR], { rotation: 0, y: 0, scaleX: 1, scaleY: 1, duration: 0.75, ease: 'back.out(1.7)' }, 0.28)
-      .to(parts.knot, { y: 0, scaleX: 0.9, scaleY: 1.06, duration: 0.25, ease: 'power3.out' }, 0.28)
-      .to(parts.knot, { scaleX: 1, scaleY: 1, scale: 1, duration: 0.6, ease: 'elastic.out(1, 0.45)' }, 0.53)
+      .to([parts.tailL, parts.tailR], { rotation: 0, y: 0, scaleY: 1, duration: 0.8, ease: 'power3.out' }, 0.4)
+      .to([parts.loopL, parts.loopR], { rotation: 0, y: 0, scaleX: 1, scaleY: 1, duration: 0.95, ease: 'back.out(1.7)' }, 0.45)
+      .to(parts.knot, { y: 0, scaleX: 0.9, scaleY: 1.06, duration: 0.3, ease: 'power3.out' }, 0.45)
+      .to(parts.knot, { scaleX: 1, scaleY: 1, scale: 1, duration: 0.7, ease: 'elastic.out(1, 0.45)' }, 0.75)
       .add(() => {
         sparkleBurst(fx, KNOT.x, KNOT.y, 16);
         try {
           navigator.vibrate?.(15);
         } catch {}
-      }, 0.35)
-      .add(() => glows.start(0.8), 0.4)
-      .to({}, { duration: 0.01 }, 1.1);
+      }, 0.55)
+      .add(() => glows.start(0.9), 0.6)
+      .to({}, { duration: 0.01 }, 1.5);
 
     return tl.then();
   }

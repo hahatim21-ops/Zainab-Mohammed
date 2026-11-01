@@ -76,9 +76,8 @@ a { color: inherit; }
   overflow: hidden;
   contain: strict;
 }
-#s-seal { z-index: 1; }
-#s-bow { z-index: 2; }
-#s-bow.is-waiting { visibility: hidden; }
+#s-seal { z-index: 2; }
+#s-bow { z-index: 1; }
 
 /* ─── Pages: one continuous scrolling column ──────────────────────
    The paintings sit edge to edge in normal flow, like one long scroll;
@@ -102,6 +101,8 @@ a { color: inherit; }
   inset: 0;
   background: rgba(248, 241, 228, 0.25);
 }
+/* While the seal and bow play on top, the pages underneath aren't drawn. */
+body.intro-playing #pages { visibility: hidden; }
 #pages {
   position: relative;
   z-index: 1;
@@ -185,6 +186,11 @@ a { color: inherit; }
 /* Bands above and below the painting: its own edges mirrored and softened
    (see scripts/optimize-images.mjs), so taller phones show no bars. */
 .bands { position: absolute; inset: 0; pointer-events: none; }
+/* The opening scenes zoom and fade: keep those parts on their own layers. */
+#intro .kb,
+#intro .intro { will-change: transform; }
+#intro .bands,
+#intro .scene-bg { will-change: opacity; }
 .bands::before,
 .bands::after {
   content: '';

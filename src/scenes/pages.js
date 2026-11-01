@@ -50,8 +50,11 @@ export function initPages({ pages, reduced, countdownItems, mapBtn, replayBtn, o
     if (!reduced) {
       const zone = TWINKLE_ZONES[page.id];
       const twinkles = zone ? twinkleField(page.querySelector('.twinkles'), zone, 6, 2.2) : null;
-      const kb = gsap.fromTo(page.querySelector('.kb'), { scale: 1 }, { scale: 1.04, duration: 16 + i, ease: 'sine.inOut', yoyo: true, repeat: -1, paused: true });
+      const kbEl = page.querySelector('.kb');
+      const kb = gsap.fromTo(kbEl, { scale: 1 }, { scale: 1.04, duration: 16 + i, ease: 'sine.inOut', yoyo: true, repeat: -1, paused: true });
       const run = (on) => {
+        // its own GPU layer only while it moves, so the zoom never repaints
+        kbEl.style.willChange = on ? 'transform' : '';
         on ? kb.play() : kb.pause();
         if (twinkles) on ? twinkles.play() : twinkles.pause();
       };

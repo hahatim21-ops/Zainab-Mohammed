@@ -65,18 +65,8 @@
   background: radial-gradient(circle, rgba(255, 252, 240, 1) 0%, rgba(255, 236, 200, 0.85) 30%, rgba(248, 226, 180, 0.35) 55%, transparent 72%);
 }
 
-/* Opening: the bow scene shows through a growing, feathered rosette. The
-   wrapper carries the mask and scales; the inner layer scales back. */
-.reveal-wrap,
-.reveal-inner { position: absolute; inset: 0; }
-#s-bow.is-revealing .reveal-wrap,
-#s-bow.is-revealing .reveal-inner { will-change: transform; }
-#s-bow.is-revealing .reveal-wrap {
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-}
 .seal-lift { z-index: 3; pointer-events: none; }
-.seal-piece { position: absolute; inset: 0; }
+.seal-piece { position: absolute; inset: 0; will-change: transform, opacity; }
 .seal-piece img { position: absolute; inset: 0; width: 100%; height: 100%; }
 
 /* ─── Scene 2 · Bow ────────────────────────────────────────────── */
@@ -87,12 +77,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: blur(3px) brightness(1.04);
   will-change: opacity;
 }
 .bow-parts { position: absolute; inset: 0; }
 .bow-parts .part,
-.untie .half-inner .part { position: absolute; max-width: none; }
+.untie .half-inner .part { position: absolute; max-width: none; will-change: transform, opacity; }
 .untie {
   position: absolute;
   inset: 0;
@@ -118,6 +107,7 @@
   border-radius: 50%;
   opacity: 0;
   background: radial-gradient(circle, rgba(255, 236, 190, 0.62) 0%, rgba(255, 214, 150, 0.26) 30%, rgba(255, 200, 130, 0) 68%);
+  will-change: transform, opacity;
 }
 .fx,
 .twinkles { position: absolute; inset: 0; pointer-events: none; }
@@ -131,6 +121,7 @@
   background: radial-gradient(circle, #fffdf5 0 12%, rgba(255, 233, 180, 0.9) 22%, transparent 60%);
   clip-path: polygon(50% 0, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0 50%, 42% 42%);
   pointer-events: none;
+  will-change: transform, opacity;
 }
 .twinkles .spark { opacity: 0; }
 
@@ -457,7 +448,21 @@
   color: var(--olive);
   white-space: nowrap;
   opacity: 0;
-  animation: cta-glow 2.8s ease-in-out infinite;
+}
+/* Soft pulsing halo: a separate layer that only fades (no repainting) */
+.scroll-cta::before {
+  content: '';
+  position: absolute;
+  inset: -1.2cqw;
+  border-radius: 3cqw;
+  border: 1.2cqw solid rgba(201, 169, 110, 0.22);
+  opacity: 0;
+  will-change: opacity;
+}
+.scroll-cta.is-live::before { animation: cta-halo 2.8s ease-in-out infinite; }
+@keyframes cta-halo {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
 }
 .scroll-cta-label {
   display: flex;
@@ -486,12 +491,9 @@
   stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
-  animation: chevron 1.6s ease-in-out infinite;
+  will-change: transform, opacity;
 }
-@keyframes cta-glow {
-  0%, 100% { box-shadow: 0 1.2cqw 4cqw rgba(123, 91, 59, 0.2), 0 0 0 0 rgba(201, 169, 110, 0.0), inset 0 0 0 0.6cqw rgba(255, 255, 255, 0.35); }
-  50% { box-shadow: 0 1.2cqw 4cqw rgba(123, 91, 59, 0.2), 0 0 0 1.4cqw rgba(201, 169, 110, 0.18), inset 0 0 0 0.6cqw rgba(255, 255, 255, 0.35); }
-}
+.scroll-cta.is-live svg { animation: chevron 1.6s ease-in-out infinite; }
 
 /* ─── Scene 7 · Couple ─────────────────────────────────────────── */
 

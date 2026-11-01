@@ -1,45 +1,15 @@
 import { gsap } from 'gsap';
 
-// Scene 1: the guest taps the wax seal. The seal lifts off whole and fades;
-// the flower then opens from the centre — the bow scene (layered above, with
-// `reveal`) shows through a soft, feathered, petal-shaped opening that grows
-// while the outer petals drift outward and soften. No cut lines, no flaps.
+// Scene 1: the guest taps the wax seal. The seal lifts off whole and fades,
+// a soft opening appears where it sat, and the camera glides into the flower
+// through that opening onto the bow scene underneath.
+//
+// Built for phones: the opening is a fixed soft mask on the seal layer and
+// grows only because the whole layer zooms (one GPU transform + a fade), so
+// nothing is redrawn while it plays.
 
 const C = { x: 52.4, y: 51.9 }; // seal centre, % of the artwork
 const SEAL_R = 11.6; // seal radius, % of width
-
-// A soft rosette (eight rounded petals around a disc) used as the opening's
-// shape. Drawn once; the animation only grows it. The shadow trick gives a
-// feathered edge in every browser.
-function rosette(size = 768) {
-  const c = document.createElement('canvas');
-  c.width = c.height = size;
-  const g = c.getContext('2d');
-  const cx = size / 2;
-  const away = size * 3;
-  const draw = (blur, alpha, grow) => {
-    g.save();
-    g.translate(cx - away, cx);
-    g.beginPath();
-    const petals = 8;
-    for (let i = 0; i < petals; i++) {
-      const a = (i / petals) * Math.PI * 2 + 0.2;
-      const r = size * 0.2 * grow * (1 + 0.06 * Math.sin(i * 2.3));
-      g.ellipse(Math.cos(a) * r * 0.72, Math.sin(a) * r * 0.72, r * 0.62, r * 0.4, a, 0, Math.PI * 2);
-    }
-    g.moveTo(size * 0.17 * grow, 0);
-    g.arc(0, 0, size * 0.17 * grow, 0, Math.PI * 2);
-    g.shadowColor = `rgba(0,0,0,${alpha})`;
-    g.shadowBlur = blur;
-    g.shadowOffsetX = away;
-    g.fillStyle = '#000';
-    g.fill('nonzero');
-    g.restore();
-  };
-  draw(size * 0.06, 0.5, 1.12);
-  draw(size * 0.035, 1, 1);
-  return c.toDataURL('image/png');
-}
 
 function copyLayer(src, cls) {
   const d = document.createElement('div');
@@ -52,7 +22,7 @@ function copyLayer(src, cls) {
   return d;
 }
 
-export function initSeal(scene, { reduced, onTap, reveal }) {
+export function initSeal(scene, { reduced, onTap }) {
   const plate = scene.querySelector('.plate');
   const img = plate.querySelector('img');
   const hit = scene.querySelector('.seal-hit');
@@ -61,69 +31,11 @@ export function initSeal(scene, { reduced, onTap, reveal }) {
   const intro = scene.querySelector('.intro');
   const stage = scene.querySelector('.stage');
 
-  // Draw the opening shape now, while the guest is still looking at the seal,
-  // so the tap itself does no heavy work.
-  const rosetteUrl = reduced ? '' : rosette();
-
-  // The bow scene is wrapped so the opening can grow by transform alone (the
-  // wrapper scales up with its mask; the inner layer scales back down), which
-  // the GPU does without repainting anything.
-  const wrap = document.createElement('div');
-  wrap.className = 'reveal-wrap';
-  const inner = document.createElement('div');
-  inner.className = 'reveal-inner';
-  inner.append(...reveal.childNodes);
-  wrap.appendChild(inner);
-  reveal.appendChild(wrap);
-
-  // The growing opening: geometry is measured on tap.
-  const hole = { s: 0 };
-  const geo = {};
-  const setHole = () => {
-    const k = Math.max(0.0005, hole.s / geo.maxSize);
-    wrap.style.transform = `scale(${k})`;
-    inner.style.transform = `scale(${1 / k})`;
-  };
-  function place() {
-    const r = stage.getBoundingClientRect();
-    const cx = r.left + (r.width * C.x) / 100;
-    const cy = r.top + (r.height * C.y) / 100;
-    const maxSize = Math.hypot(Math.max(cx, innerWidth - cx), Math.max(cy, innerHeight - cy)) * 2 * 1.9;
-    Object.assign(geo, { r, cx, cy, maxSize });
-    // The wrapper is a square the size of the full-grown rosette, centred
-    // on the seal (so it never clips its own mask); the inner layer is put
-    // back exactly over the screen.
-    const half = maxSize / 2;
-    Object.assign(wrap.style, {
-      inset: 'auto',
-      left: `${cx - half}px`,
-      top: `${cy - half}px`,
-      width: `${maxSize}px`,
-      height: `${maxSize}px`,
-      maskImage: `url(${rosetteUrl})`,
-      webkitMaskImage: `url(${rosetteUrl})`,
-      maskSize: '100% 100%',
-      webkitMaskSize: '100% 100%',
-      transformOrigin: '50% 50%',
-    });
-    Object.assign(inner.style, {
-      inset: 'auto',
-      left: `${half - cx}px`,
-      top: `${half - cy}px`,
-      width: `${innerWidth}px`,
-      height: `${innerHeight}px`,
-      transformOrigin: `${cx}px ${cy}px`,
-    });
-    setHole();
-  }
-
-  // Prepared before the tap (the bow scene is still hidden, so this costs
-  // no painting): the opening's geometry, and the seal that will lift away,
-  // in a twin stage with the same size and position as the artwork.
+  // Prepared before the tap: the seal that will lift away, in a twin stage
+  // with the same size and position as the artwork.
   let liftStage, seal;
   if (!reduced) {
-    place();
-    window.addEventListener('resize', place);
+    scene.style.willChange = 'transform, opacity';
     liftStage = document.createElement('div');
     liftStage.className = 'stage seal-lift';
     liftStage.style.visibility = 'hidden';
@@ -157,20 +69,25 @@ export function initSeal(scene, { reduced, onTap, reveal }) {
       idle.pause();
 
       if (reduced) {
-        reveal.classList.remove('is-waiting');
         await gsap.to(scene, { opacity: 0, duration: 1, ease: 'power1.inOut' });
         scene.style.display = 'none';
         return;
       }
 
-      // Everything below was prepared before the tap; now just show it.
+      // The seal copy covers the real one, then lifts away.
       liftStage.style.visibility = 'visible';
       gsap.set(seal, { scale: gsap.getProperty(intro, 'scale'), transformOrigin: origin });
 
-      // Opening: the next scene shows through a growing rosette.
-      reveal.classList.add('is-revealing');
-      reveal.classList.remove('is-waiting');
-      const { r, maxSize } = geo;
+      // A soft opening where the seal sits (hidden under the seal copy at
+      // first), fixed in size — the zoom below is what makes it grow.
+      const r = stage.getBoundingClientRect();
+      const k = gsap.getProperty(intro, 'scale');
+      const cx = r.left + (r.width * C.x) / 100;
+      const cy = r.top + (r.height * C.y) / 100;
+      const sealPx = ((r.width * SEAL_R) / 100) * k;
+      const hole = `radial-gradient(circle at ${cx}px ${cy}px, transparent ${sealPx * 0.7}px, #000 ${sealPx * 1.9}px)`;
+      scene.style.maskImage = scene.style.webkitMaskImage = hole;
+      gsap.set(scene, { transformOrigin: `${cx}px ${cy}px` });
 
       const tl = gsap.timeline();
       if (import.meta.env.DEV) window.__sealTl = tl;
@@ -179,20 +96,14 @@ export function initSeal(scene, { reduced, onTap, reveal }) {
         .to(seal, { scale: '-=0.05', duration: 0.18, ease: 'power2.in' }, 0)
         .to(seal, { scale: '+=0.2', y: -r.width * 0.06, duration: 1.3, ease: 'power2.out' }, 0.18)
         .to(seal, { opacity: 0, duration: 0.8, ease: 'power1.in' }, 0.95)
-        // The flower opens from the centre
-        // (first just wide enough to open the seal's spot as it lifts)
-        .to(hole, { s: r.width * 0.42, duration: 0.45, ease: 'power2.out', onUpdate: setHole }, 0.12)
-        .to(hole, { s: maxSize, duration: 2.1, ease: 'power2.in', onUpdate: setHole }, 0.57)
-        // …while the outer petals drift outward and soften
-        .to(intro, { scale: 1.22, duration: 2.4, ease: 'power1.in' }, 0.35)
-        .to(scene.querySelectorAll('.scene-bg, .bands'), { opacity: 0, duration: 1.4, ease: 'power1.in' }, 1.0);
+        // The flower opens a little where the seal was…
+        .to(scene, { scale: 1.25, duration: 0.8, ease: 'power1.out' }, 0.15)
+        // …then the camera glides in through the opening onto the bow
+        .to(scene, { scale: 9, duration: 1.75, ease: 'power2.in' }, 0.95)
+        .to(scene, { opacity: 0, duration: 0.8, ease: 'power1.in' }, 1.9);
 
       await tl;
       idle.kill();
-      reveal.classList.remove('is-revealing', 'is-waiting');
-      window.removeEventListener('resize', place);
-      wrap.removeAttribute('style');
-      inner.removeAttribute('style');
       scene.style.display = 'none';
       liftStage.remove();
     }

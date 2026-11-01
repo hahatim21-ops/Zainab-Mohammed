@@ -86,7 +86,6 @@ async function start() {
   petals.start();
   await initSeal(scenes.seal, {
     reduced,
-    reveal: scenes.bow,
     onTap: () => {
       music.start();
       if (music.available) {
@@ -100,9 +99,10 @@ async function start() {
   //    the names card — no tap needed ──
   await bow.tie();
   petals.setCount(14);
-  await wait(reduced ? 0.4 : 0.35);
+  await wait(reduced ? 0.4 : 0.95); // the finished bow holds a moment
   const namesIntro = scenes.names.querySelector('.intro');
   if (!reduced) gsap.fromTo(namesIntro, { scale: 1.1 }, { scale: 1, duration: 1.9, ease: 'power2.out' });
+  document.body.classList.remove('intro-playing'); // the names card shows as the curtains part
   await bow.untie();
   // Hide the finished opening now; remove it once the browser is idle.
   const introEl = $('#intro');
@@ -114,7 +114,7 @@ async function start() {
   // A clear "Scroll down" box on the names card; the small hint at the
   // bottom of the screen only returns if the guest pauses further down.
   const cta = scenes.names.querySelector('.scroll-cta');
-  gsap.fromTo(cta, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.9, delay: 0.5, ease: 'power2.out' });
+  gsap.fromTo(cta, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.9, delay: 0.5, ease: 'power2.out', onComplete: () => cta.classList.add('is-live') });
   cta.addEventListener('click', () => scroll.lenis.scrollTo(scenes.date, { duration: 1.6 }));
   scroll.hint(true, false);
 
