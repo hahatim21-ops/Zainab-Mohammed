@@ -76,8 +76,10 @@ a { color: inherit; }
   overflow: hidden;
   contain: strict;
 }
-#s-seal { z-index: 2; }
-#s-bow { z-index: 1; }
+#s-seal { z-index: 1; }
+/* The bow scene sits above the seal, closed by its mask until the tap */
+#s-bow { z-index: 2; pointer-events: none; }
+#s-bow.is-waiting { visibility: hidden; }
 
 /* ─── Pages: one continuous scrolling column ──────────────────────
    The paintings sit edge to edge in normal flow, like one long scroll;
@@ -103,6 +105,9 @@ a { color: inherit; }
 }
 /* While the seal and bow play on top, the pages underneath aren't drawn. */
 body.intro-playing #pages { visibility: hidden; }
+body.intro-playing #pages *,
+body.intro-playing #pages *::before,
+body.intro-playing #pages *::after { animation-play-state: paused !important; }
 #pages {
   position: relative;
   z-index: 1;

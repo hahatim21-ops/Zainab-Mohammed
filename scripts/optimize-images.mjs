@@ -57,6 +57,9 @@ for (const name of SCENES) {
 
   await extendPainting(base.clone(), path.join(outImg, `${name}-bands.webp`));
   // The bow's soft "waiting" look, blurred here so the phone never has to.
+  if (name === '01-seal') {
+    await base.clone().blur(5).modulate({ brightness: 1.04 }).webp({ quality: 78 }).toFile(path.join(outImg, '01-seal-soft.webp'));
+  }
   if (name === '02-bow') {
     await base.clone().blur(8).modulate({ brightness: 1.04 }).webp({ quality: 78 }).toFile(path.join(outImg, '02-bow-soft.webp'));
   }

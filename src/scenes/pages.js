@@ -1,6 +1,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { twinkleField } from '../effects/sparkles.js';
+import { gated } from '../core/introGate.js';
 
 // The pages (names card → date & countdown → Nikah → Dinner → couple) form
 // one continuous scrolling column. As each painting comes up it softly lifts
@@ -41,7 +42,7 @@ export function initPages({ pages, reduced, countdownItems, mapBtn, replayBtn, o
         trigger: page,
         start: 'top 70%',
         end: 'bottom 30%',
-        onToggle: (self) => (self.isActive ? sweep.restart(true) : sweep.pause()),
+        onToggle: ((set) => (self) => set(self.isActive))(gated((on) => (on ? sweep.restart(true) : sweep.pause()))),
       });
     });
 
@@ -52,12 +53,12 @@ export function initPages({ pages, reduced, countdownItems, mapBtn, replayBtn, o
       const twinkles = zone ? twinkleField(page.querySelector('.twinkles'), zone, 6, 2.2) : null;
       const kbEl = page.querySelector('.kb');
       const kb = gsap.fromTo(kbEl, { scale: 1 }, { scale: 1.04, duration: 16 + i, ease: 'sine.inOut', yoyo: true, repeat: -1, paused: true });
-      const run = (on) => {
+      const run = gated((on) => {
         // its own GPU layer only while it moves, so the zoom never repaints
         kbEl.style.willChange = on ? 'transform' : '';
         on ? kb.play() : kb.pause();
         if (twinkles) on ? twinkles.play() : twinkles.pause();
-      };
+      });
       run(false);
       ScrollTrigger.create({ trigger: page, start: 'top bottom', end: 'bottom top', onToggle: (self) => run(self.isActive) });
     }

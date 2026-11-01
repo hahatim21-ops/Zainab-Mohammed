@@ -1,6 +1,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { twinkleField } from '../effects/sparkles.js';
+import { gated } from '../core/introGate.js';
 import { fireCannons } from '../effects/confetti.js';
 
 // Scene 3: the printed date sits under a feathered golden veil. One tap
@@ -21,7 +22,8 @@ export function initDate(scene, { reduced }) {
   // Veil sparkles twinkle only while the date page is on screen.
   if (sparkles) {
     sparkles.pause();
-    ScrollTrigger.create({ trigger: scene, start: 'top bottom', end: 'bottom top', onToggle: (self) => !revealed && (self.isActive ? sparkles.play() : sparkles.pause()) });
+    const run = gated((on) => !revealed && (on ? sparkles.play() : sparkles.pause()));
+    ScrollTrigger.create({ trigger: scene, start: 'top bottom', end: 'bottom top', onToggle: (self) => run(self.isActive) });
   }
 
 

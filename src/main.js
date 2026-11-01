@@ -19,6 +19,7 @@ import { initNikah } from './scenes/nikah.js';
 import { initDinner } from './scenes/dinner.js';
 import { initCouple } from './scenes/couple.js';
 import { initPages } from './scenes/pages.js';
+import { introDone } from './core/introGate.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -86,6 +87,7 @@ async function start() {
   petals.start();
   await initSeal(scenes.seal, {
     reduced,
+    reveal: scenes.bow,
     onTap: () => {
       music.start();
       if (music.available) {
@@ -102,7 +104,7 @@ async function start() {
   await wait(reduced ? 0.4 : 0.95); // the finished bow holds a moment
   const namesIntro = scenes.names.querySelector('.intro');
   if (!reduced) gsap.fromTo(namesIntro, { scale: 1.1 }, { scale: 1, duration: 1.9, ease: 'power2.out' });
-  document.body.classList.remove('intro-playing'); // the names card shows as the curtains part
+  introDone(); // the names card shows (and its effects start) as the curtains part
   await bow.untie();
   // Hide the finished opening now; remove it once the browser is idle.
   const introEl = $('#intro');
